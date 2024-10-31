@@ -1050,12 +1050,12 @@ describe('selectFrom tests', () => {
     expect(presentationResult).toBeDefined();
     expect(result.errors).toHaveLength(0);
     const eOrder = await SDJwt.fromEncode(presentationResult.presentations[0].compactSdJwtVc, hasher);
-    const ePassport = await SDJwt.fromEncode(presentationResult.presentations[1].compactSdJwtVc, hasher);     
+    const ePassport = await SDJwt.fromEncode(presentationResult.presentations[1].compactSdJwtVc, hasher);
     const claims = {
-      ...await eOrder.getClaims<Record<string, ClaimValue>>(hasher),
-      ...await ePassport.getClaims<Record<string, ClaimValue>>(hasher)
-    }
-    
+      ...(await eOrder.getClaims<Record<string, ClaimValue>>(hasher)),
+      ...(await ePassport.getClaims<Record<string, ClaimValue>>(hasher)),
+    };
+
     console.log(claims);
 
     // Check data group 1
@@ -1074,30 +1074,30 @@ describe('selectFrom tests', () => {
     expect((claims.electronicPassport as Record<string, Record<string, unknown>>).digitalTravelCredential).toEqual({});
 
     // Check order structure
-    expect(claims.order).toBeDefined()
-    expect((claims.order as { paxSegments: unknown[] }).paxSegments).toBeDefined()
-    expect(Array.isArray((claims.order as { paxSegments: unknown[] }).paxSegments)).toBe(true)
+    expect(claims.order).toBeDefined();
+    expect((claims.order as { paxSegments: unknown[] }).paxSegments).toBeDefined();
+    expect(Array.isArray((claims.order as { paxSegments: unknown[] }).paxSegments)).toBe(true);
 
-    const paxSegment = (claims.order as { paxSegments: Record<string, string>[] }).paxSegments[0]
-    expect(paxSegment.destStationIATALocationCode).toBe('IATA326236')
-    expect(paxSegment.flightIdentifierDate).toBe('30102000')
-    expect(paxSegment.operatingCarrierAirlineDesigCode).toBe('IATA4376458458')
-    expect(paxSegment.operatingCarrierFlightNumber).toBe('2365')
-    expect(paxSegment.originStationIATALocationCode).toBe('IN34677')
-    expect(paxSegment.bookingStatusCode).toBe('CNF')
-    expect(paxSegment.scheduledArrivalTime).toBe('30102000')
-    expect(paxSegment.scheduledDepartureTime).toBe('TEST3263467')
-    
+    const paxSegment = (claims.order as { paxSegments: Record<string, string>[] }).paxSegments[0];
+    expect(paxSegment.destStationIATALocationCode).toBe('IATA326236');
+    expect(paxSegment.flightIdentifierDate).toBe('30102000');
+    expect(paxSegment.operatingCarrierAirlineDesigCode).toBe('IATA4376458458');
+    expect(paxSegment.operatingCarrierFlightNumber).toBe('2365');
+    expect(paxSegment.originStationIATALocationCode).toBe('IN34677');
+    expect(paxSegment.bookingStatusCode).toBe('CNF');
+    expect(paxSegment.scheduledArrivalTime).toBe('30102000');
+    expect(paxSegment.scheduledDepartureTime).toBe('TEST3263467');
+
     // Additional top-level claims checks
-    expect(claims.vct).toBe('epassport_copy_vc')
-    expect(claims.type).toBe('epassport_copy_vc')
-    expect(claims.iss).toBe('did:web:agent.nb.dev.sphereon.com')
+    expect(claims.vct).toBe('epassport_copy_vc');
+    expect(claims.type).toBe('epassport_copy_vc');
+    expect(claims.iss).toBe('did:web:agent.nb.dev.sphereon.com');
 
     // Check cnf object
     expect(claims.cnf).toEqual({
-      kid: 'did:jwk:eyJhbGciOiJFUzI1NiIsInVzZSI6InNpZyIsImt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLCJ4IjoiWUM5aE1keUNSVXBwbmpzWnlPbHl2dmpCY2JNdW5Nb3ZxdS1JVUJPd1VhYyIsInkiOiJmeW9XRE9ZMGZXRHRiWnN4eEs0VXJMZGc5c2JLRXlqa1d3U096dUQxLUtnIn0#0'
-    })
-    
+      kid: 'did:jwk:eyJhbGciOiJFUzI1NiIsInVzZSI6InNpZyIsImt0eSI6IkVDIiwiY3J2IjoiUC0yNTYiLCJ4IjoiWUM5aE1keUNSVXBwbmpzWnlPbHl2dmpCY2JNdW5Nb3ZxdS1JVUJPd1VhYyIsInkiOiJmeW9XRE9ZMGZXRHRiWnN4eEs0VXJMZGc5c2JLRXlqa1d3U096dUQxLUtnIn0#0',
+    });
+
     // Top level claims
     expect(claims.vct).toBe('epassport_copy_vc');
     expect(claims.type).toBe('epassport_copy_vc');
