@@ -24,4 +24,5 @@ const vcVpFormatMap = {
   ldp_vc: 'ldp_vp',
   jwt_vc: 'jwt_vp',
   'vc+sd-jwt': 'vc+sd-jwt',
+  mso_mdoc: 'mso_mdoc',
 } as const;

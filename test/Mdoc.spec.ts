@@ -159,6 +159,31 @@ describe('evaluate mdoc', () => {
     });
   });
 
+  it('evaluatePresentation with mso_mdoc format generating a submission', async () => {
+    const presentationDefinition = getPresentationDefinitionV2();
+    const evaluateResults = pex.evaluatePresentation(presentationDefinition, [mdocBase64UrlUniversityPresentation], {
+      generatePresentationSubmission: true,
+    });
+
+    expect(evaluateResults).toEqual({
+      presentations: [mdocBase64UrlUniversityPresentation],
+      areRequiredCredentialsPresent: Status.INFO,
+      warnings: [],
+      errors: [],
+      value: {
+        definition_id: presentationDefinition.id,
+        descriptor_map: [
+          {
+            format: 'mso_mdoc',
+            id: 'org.eu.university',
+            path: '$[0]',
+          },
+        ],
+        id: expect.any(String),
+      },
+    });
+  });
+
   it('evaluatePresentation with both mso_mdoc and vc+sd-jwt format', async () => {
     const presentationDefinition = getPresentationDefinitionV2(true);
     const submission = {
