@@ -1088,6 +1088,59 @@ describe('evaluate', () => {
     expect(result.error).toEqual('This is not a valid PresentationDefinition');
   });
 
+  it('evaluatePresentation with submission using $[0] while not passing an array will result in an error', function () {
+    const pdSchema: PresentationDefinitionV2 = {
+      id: '49768857',
+      input_descriptors: [
+        {
+          id: 'prc_type',
+          name: 'Name',
+          purpose: 'We can only support a familyName in a Permanent Resident Card',
+          constraints: {
+            fields: [
+              {
+                path: ['$.credentialSubject.familyName'],
+                filter: {
+                  type: 'string',
+                  const: 'Pasteur',
+                },
+              },
+            ],
+          },
+        },
+      ],
+    };
+    const pex: PEX = new PEX();
+    const jwtEncodedVp = getFile('./test/dif_pe_examples/vp/vp_permanentResidentCard.jwt');
+    const evalResult: PresentationEvaluationResults = pex.evaluatePresentation(pdSchema, [jwtEncodedVp], {
+      presentationSubmissionLocation: PresentationSubmissionLocation.EXTERNAL,
+      presentationSubmission: {
+        definition_id: pdSchema.id,
+        id: 'random',
+        descriptor_map: [
+          {
+            id: 'prc_type',
+            format: 'ldp_vp',
+            path: '$',
+            path_nested: {
+              id: 'prc_type',
+              format: 'ldp_vc',
+              path: '$.verifiableCredential[0]',
+            },
+          },
+        ],
+      },
+    });
+    expect(evalResult.errors).toEqual([
+      {
+        message:
+          "Extraction of path $ for submission.descriptor_map[0] returned multiple entires. This is probably because the submission uses '$' to reference the presentation, while an array was used (thus all presentations are selected). Make sure the submission uses the correct path.",
+        status: 'error',
+        tag: 'SubmissionPathMultipleEntries',
+      },
+    ]);
+  });
+
   it('should pass with jwt vp with submission data', function () {
     const pdSchema: PresentationDefinitionV2 = {
       id: '49768857',
