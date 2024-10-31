@@ -28,7 +28,7 @@ export function applySdJwtLimitDisclosure(
   sdJwtDecodedVerifiableCredential: SdJwtDecodedVerifiableCredential,
   presentationFrame: SdJwtPresentationFrame,
 ) {
-  const SerializedDisclosures = sdJwtDecodedVerifiableCredential.disclosures.map((d) => ({
+  const serializedDisclosures = sdJwtDecodedVerifiableCredential.disclosures.map((d) => ({
     digest: d.digest,
     encoded: d.encoded,
     salt: d.decoded[0],
@@ -39,7 +39,7 @@ export function applySdJwtLimitDisclosure(
   const requiredDisclosures = selectDisclosures(
     ObjectUtils.cloneDeep(sdJwtDecodedVerifiableCredential.signedPayload),
     // Map to sd-jwt disclosure format
-    SerializedDisclosures,
+    serializedDisclosures,
     presentationFrame as PresentationFrame<Record<string, unknown>>,
   );
 

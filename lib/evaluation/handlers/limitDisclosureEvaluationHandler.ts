@@ -10,6 +10,7 @@ import {
   WrappedVerifiableCredential,
 } from '@sphereon/ssi-types';
 
+import { ClaimValue } from '../../../test/types';
 import { Status } from '../../ConstraintUtils';
 import { IInternalPresentationDefinition, InputDescriptorWithIndex, PathComponent } from '../../types';
 import PexMessages from '../../types/Messages';
@@ -139,15 +140,43 @@ export class LimitDisclosureEvaluationHandler extends AbstractEvaluationHandler 
     // Can be nested array / object
     const presentationFrame: SdJwtPresentationFrame = {};
 
+    const processNestedObject = (obj: ClaimValue, currentPath: PathComponent[], basePath: PathComponent[]) => {
+      if (obj === null || typeof obj !== 'object') {
+        // For literal values, set the path to true in the presentation frame
+        JsonPathUtils.setValue(presentationFrame, currentPath, true);
+        return;
+      }
+
+      // For arrays, process each element
+      if (Array.isArray(obj)) {
+        obj.forEach((item, index) => {
+          processNestedObject(item, [...currentPath, index], basePath);
+        });
+        return;
+      }
+
+      // For objects, process each child property
+      Object.entries(obj).forEach(([key, value]) => {
+        processNestedObject(value, [...currentPath, key], basePath);
+      });
+    };
+
     for (const { inputDescriptor, inputDescriptorIndex } of inputDescriptors) {
       for (const field of inputDescriptor.constraints?.fields ?? []) {
         if (field.path) {
           const inputField = JsonPathUtils.extractInputField(vc.decodedPayload, field.path);
 
-          // We set the value to true at the path in the presentation frame,
           if (inputField.length > 0) {
             const selectedField = inputField[0];
-            JsonPathUtils.setValue(presentationFrame, selectedField.path, true);
+            const fieldValue = JsonPathUtils.getValue<ClaimValue>(vc.decodedPayload, selectedField.path);
+
+            if (fieldValue !== null && typeof fieldValue === 'object') {
+              // For objects, recursively process all nested fields
+              processNestedObject(fieldValue, selectedField.path, selectedField.path);
+            } else {
+              // For literal values, just set the path to true
+              JsonPathUtils.setValue(presentationFrame, selectedField.path, true);
+            }
           } else {
             this.createMandatoryFieldNotFoundResult(inputDescriptorIndex, vcIndex, field.path);
             return undefined;

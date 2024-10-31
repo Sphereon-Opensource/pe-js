@@ -78,6 +78,15 @@ export class JsonPathUtils {
     return obj;
   }
 
+  public static getValue<T = unknown>(obj: InputFieldType, path: string | PathComponent[]): T | undefined {
+    try {
+      const stringPath = typeof path === 'string' ? path : jp.stringify(path);
+      return jp.value(obj, stringPath) as T;
+    } catch (error) {
+      return undefined;
+    }
+  }
+
   private static copyResultPathToDestinationDefinition(pathDetails: (string | number)[], pd: IPresentationDefinition, newPropertyName: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let objectCursor: any = pd;

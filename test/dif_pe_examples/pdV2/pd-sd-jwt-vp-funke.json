@@ -1,0 +1,54 @@
+{
+  "presentation_definition": {
+    "id": "pid-sdjwt",
+    "name": "Identity verification SD-JWT",
+    "purpose": "We need to verify your identity information.",
+    "format": {
+      "vc+sd-jwt": {
+        "sd-jwt_alg_values": [
+          "ES256",
+          "ES384",
+          "ES512",
+          "EdDSA"
+        ]
+      }
+    },
+    "input_descriptors": [
+      {
+        "id": "6aa0ac61-6535-46c2-924d-65fccfe65f4f",
+        "constraints": {
+          "limit_disclosure": "required",
+          "fields": [
+            {
+              "path": [
+                "$.place_of_birth"
+              ]
+            },
+            {
+              "path": [
+                "$.given_name"
+              ]
+            },
+            {
+              "path": [
+                "$.family_name"
+              ]
+            },
+            {
+              "path": [
+                "$.address"
+              ]
+            },
+            {
+              "path": [
+                "$.age_equal_or_over.18"
+              ]
+            }
+          ]
+        },
+        "name": "Identity",
+        "purpose": "We need your identity information."
+      }
+    ]
+  }
+}

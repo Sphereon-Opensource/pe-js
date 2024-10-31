@@ -10,6 +10,7 @@ import { EvaluationClientWrapper } from '../../lib/evaluation';
 import { SubmissionRequirementMatchType } from '../../lib/evaluation/core';
 import { InternalPresentationDefinitionV1, InternalPresentationDefinitionV2, SSITypesBuilder } from '../../lib/types';
 import PexMessages from '../../lib/types/Messages';
+import { ClaimValue } from '../types';
 
 export const hasher = (data: string) => createHash('sha256').update(data).digest();
 
@@ -42,7 +43,10 @@ describe('selectFrom tests', () => {
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
     expect(
-      evaluationClientWrapper.selectFrom(pd, wvcs, { holderDIDs: dids, limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES }),
+      evaluationClientWrapper.selectFrom(pd, wvcs, {
+        holderDIDs: dids,
+        limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
+      }),
     ).toEqual({
       areRequiredCredentialsPresent: Status.INFO,
       errors: [],
@@ -164,7 +168,10 @@ describe('selectFrom tests', () => {
       vpSimple.verifiableCredential[2],
     ]);
     expect(
-      evaluationClientWrapper.selectFrom(pd, wvcs, { holderDIDs: dids, limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES }),
+      evaluationClientWrapper.selectFrom(pd, wvcs, {
+        holderDIDs: dids,
+        limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
+      }),
     ).toEqual({
       areRequiredCredentialsPresent: Status.INFO,
       errors: [],
@@ -256,7 +263,10 @@ describe('selectFrom tests', () => {
       vpSimple.verifiableCredential[2],
     ]);
     expect(
-      evaluationClientWrapper.selectFrom(pd, wvcs, { holderDIDs: dids, limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES }),
+      evaluationClientWrapper.selectFrom(pd, wvcs, {
+        holderDIDs: dids,
+        limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
+      }),
     ).toEqual({
       areRequiredCredentialsPresent: Status.INFO,
       errors: [],
@@ -329,7 +339,10 @@ describe('selectFrom tests', () => {
       vpSimple.verifiableCredential[2],
     ]);
     expect(
-      evaluationClientWrapper.selectFrom(pd, wvcs, { holderDIDs: dids, limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES }),
+      evaluationClientWrapper.selectFrom(pd, wvcs, {
+        holderDIDs: dids,
+        limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
+      }),
     ).toEqual({
       areRequiredCredentialsPresent: Status.INFO,
       errors: [],
@@ -452,7 +465,10 @@ describe('selectFrom tests', () => {
       vpSimple.verifiableCredential[2],
     ]);
     expect(
-      evaluationClientWrapper.selectFrom(pd, wvcs, { holderDIDs: dids, limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES }),
+      evaluationClientWrapper.selectFrom(pd, wvcs, {
+        holderDIDs: dids,
+        limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
+      }),
     ).toEqual({
       areRequiredCredentialsPresent: Status.INFO,
       errors: [],
@@ -576,7 +592,10 @@ describe('selectFrom tests', () => {
       vpSimple.verifiableCredential[2],
     ]);
     expect(
-      evaluationClientWrapper.selectFrom(pd, wvcs, { holderDIDs: dids, limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES }),
+      evaluationClientWrapper.selectFrom(pd, wvcs, {
+        holderDIDs: dids,
+        limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
+      }),
     ).toEqual({
       areRequiredCredentialsPresent: Status.INFO,
       errors: [],
@@ -1028,9 +1047,76 @@ describe('selectFrom tests', () => {
 
     pex.evaluateCredentials(pd, result.verifiableCredential!);
     const presentationResult = pex.presentationFrom(pd, result.verifiableCredential!);
-    const cred = await SDJwt.fromEncode(presentationResult.presentations[1].compactSdJwtVc, hasher);
-    await cred.getClaims(hasher);
     expect(presentationResult).toBeDefined();
-    // TODO finish test
+    const cred = await SDJwt.fromEncode(presentationResult.presentations[1].compactSdJwtVc, hasher);
+    const claims = await cred.getClaims<Record<string, ClaimValue>>(hasher);
+
+    console.log(claims);
+
+    // Check data group 1
+    expect((claims.electronicPassport as { dataGroup1: Record<string, string> }).dataGroup1.birthdate).toBe('2024-10-09');
+    expect((claims.electronicPassport as { dataGroup1: Record<string, string> }).dataGroup1.issuerCode).toBe('d');
+    expect((claims.electronicPassport as { dataGroup1: Record<string, string> }).dataGroup1.sexCode).toBe('dd');
+    expect((claims.electronicPassport as { dataGroup1: Record<string, string> }).dataGroup1.expiryDate).toBe('2024-10-10');
+    expect((claims.electronicPassport as { dataGroup1: Record<string, string> }).dataGroup1.holdersName).toBe('dd');
+    expect((claims.electronicPassport as { dataGroup1: Record<string, string> }).dataGroup1.natlCode).toBe('d');
+    expect((claims.electronicPassport as { dataGroup1: Record<string, string> }).dataGroup1.passportNumberIdentifier).toBe('d');
+
+    // Check empty objects
+    expect((claims.electronicPassport as Record<string, Record<string, unknown>>).dataGroup2EncodedFaceBiometrics).toEqual({});
+    expect((claims.electronicPassport as Record<string, Record<string, unknown>>).docSecurityObject).toEqual({});
+    expect((claims.electronicPassport as Record<string, Record<string, unknown>>).dataGroup15.activeAuthentication).toEqual({});
+    expect((claims.electronicPassport as Record<string, Record<string, unknown>>).digitalTravelCredential).toEqual({});
+
+    // Top level claims
+    expect(claims.vct).toBe('epassport_copy_vc');
+    expect(claims.type).toBe('epassport_copy_vc');
+    expect(claims.iss).toBe('did:web:agent.nb.dev.sphereon.com');
+  });
+
+  it('Funke test', async function () {
+    const pdSchema: InternalPresentationDefinitionV2 = getFileAsJson('./test/dif_pe_examples/pdV2/pd-sd-jwt-vp-funke.json').presentation_definition;
+    const vcs: string[] = [];
+    vcs.push(getFile('test/dif_pe_examples/vc/vc-funke-pid-sd.jwt').replace(/(\r\n|\n|\r)/gm, ''));
+    const pd = SSITypesBuilder.modelEntityInternalPresentationDefinitionV2(pdSchema);
+    const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
+    const wvcs: WrappedVerifiableCredential[] = SSITypesBuilder.mapExternalVerifiableCredentialsToWrappedVcs(vcs, hasher);
+    const result = evaluationClientWrapper.selectFrom(pd, wvcs, {
+      holderDIDs: ['FAsYneKJhWBP2n5E21ZzdY'],
+      limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
+    });
+    expect(result.areRequiredCredentialsPresent).toBe(Status.INFO);
+
+    pex.evaluateCredentials(pd, result.verifiableCredential!);
+    const presentationResult = pex.presentationFrom(pd, result.verifiableCredential!);
+    expect(presentationResult).toBeDefined();
+    const cred = await SDJwt.fromEncode(presentationResult.presentations[0].compactSdJwtVc, hasher);
+    const claims = await cred.getClaims<Record<string, ClaimValue>>(hasher);
+    console.log(claims);
+
+    // Check personal information
+    expect(claims.family_name).toBe('MUSTERMANN');
+    expect(claims.given_name).toBe('ERIKA');
+
+    // Check place of birth
+    expect((claims.place_of_birth as { locality: string }).locality).toBe('BERLIN');
+
+    // Check address details
+    expect(
+      (
+        claims.address as {
+          locality: string;
+          postal_code: string;
+          country: string;
+          street_address: string;
+        }
+      ).locality,
+    ).toBe('KÖLN');
+
+    // Check issuing country
+    expect(claims.issuing_country).toBe('DE');
+
+    // Check age verification
+    expect((claims.age_equal_or_over as { '18': boolean })['18']).toBe(true);
   });
 });
