@@ -1078,6 +1078,16 @@ describe('selectFrom tests', () => {
     expect((claims.order as { paxSegments: unknown[] }).paxSegments).toBeDefined()
     expect(Array.isArray((claims.order as { paxSegments: unknown[] }).paxSegments)).toBe(true)
 
+    const paxSegment = (claims.order as { paxSegments: Record<string, string>[] }).paxSegments[0]
+    expect(paxSegment.destStationIATALocationCode).toBe('IATA326236')
+    expect(paxSegment.flightIdentifierDate).toBe('30102000')
+    expect(paxSegment.operatingCarrierAirlineDesigCode).toBe('IATA4376458458')
+    expect(paxSegment.operatingCarrierFlightNumber).toBe('2365')
+    expect(paxSegment.originStationIATALocationCode).toBe('IN34677')
+    expect(paxSegment.bookingStatusCode).toBe('CNF')
+    expect(paxSegment.scheduledArrivalTime).toBe('30102000')
+    expect(paxSegment.scheduledDepartureTime).toBe('TEST3263467')
+    
     // Additional top-level claims checks
     expect(claims.vct).toBe('epassport_copy_vc')
     expect(claims.type).toBe('epassport_copy_vc')
