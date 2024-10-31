@@ -325,6 +325,23 @@ describe('evaluate', () => {
     expect(result!.areRequiredCredentialsPresent).toBe('info');
   });
 
+  it('Evaluate selectFrom should fail', () => {
+    const pd: PresentationDefinitionV2 = getPresentationDefinitionV2_1();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (pd as any).input_descriptors = undefined;
+    const result1 = PEX.definitionVersionDiscovery(pd);
+    expect(result1.v1Errors?.length).toBe(2);
+    expect(result1.v2Errors?.length).toBe(1);
+    expect(() => PEX.validateDefinition(pd)).toThrow(
+      'This is not a valid PresentationDefinition\n' +
+        'Version 1 validation errors:\n' +
+        "  /presentation_definition: must have required property 'input_descriptors'\n" +
+        '  /presentation_definition: must NOT have additional properties (frame)\n' +
+        'Version 2 validation errors:\n' +
+        "  /presentation_definition: must have required property 'input_descriptors'",
+    );
+  });
+
   it("should throw error if proofOptions doesn't have a type with v2 pd", async () => {
     const pdSchema = getFile('./test/dif_pe_examples/pdV2/vc_expiration(corrected).json');
     const vpSimple = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;

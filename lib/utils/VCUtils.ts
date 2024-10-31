@@ -1,12 +1,9 @@
 import { AdditionalClaims, CredentialMapper, ICredential, ICredentialSubject, IIssuer, SdJwtDecodedVerifiableCredential } from '@sphereon/ssi-types';
 
 import { DiscoveredVersion, IPresentationDefinition, PEVersion } from '../types';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import validatePDv1 from '../validation/validatePDv1.js';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import validatePDv2 from '../validation/validatePDv2.js';
+import { ValidationError } from '../validation/validators';
 
 import { ObjectUtils } from './ObjectUtils';
 import { JsonPathUtils } from './jsonPathUtils';
@@ -34,27 +31,32 @@ export function definitionVersionDiscovery(presentationDefinition: IPresentation
   JsonPathUtils.changePropertyNameRecursively(presentationDefinitionCopy, '_const', 'const');
   JsonPathUtils.changePropertyNameRecursively(presentationDefinitionCopy, '_enum', 'enum');
   const data = { presentation_definition: presentationDefinitionCopy };
-  let result = validatePDv2(data);
-
-  if (result) {
+  if (validatePDv2(data)) {
     return { version: PEVersion.v2 };
   }
-  // Errors are added to the validation method, but not typed correctly
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const v2Errors = validatePDv2.errors;
+  const v2Errors = validatePDv2.errors ?? undefined;
 
-  result = validatePDv1(data);
-  if (result) {
+  if (validatePDv1(data)) {
     return { version: PEVersion.v1 };
   }
+  const v1Errors = validatePDv1.errors ?? undefined;
 
-  // Errors are added to the validation method, but not typed correctly
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const v1Errors = validatePDv1.errors;
+  return {
+    error: 'This is not a valid PresentationDefinition',
+    v1Errors,
+    v2Errors,
+  };
+}
 
-  return { error: 'This is not a valid PresentationDefinition', v1Errors, v2Errors };
+export function formatValidationError(error: ValidationError): string {
+  return `${error.instancePath || '/'}: ${error.message}${error.params.additionalProperty ? ` (${error.params.additionalProperty})` : ''}`;
+}
+
+export function formatValidationErrors(errors: ValidationError[] | undefined): string | undefined {
+  if (!errors?.length) {
+    return undefined;
+  }
+  return errors.map(formatValidationError).join('\n  ');
 }
 
 export function uniformDIDMethods(dids?: string[], opts?: { removePrefix: 'did:' }) {

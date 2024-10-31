@@ -30,7 +30,7 @@ import {
   VerifiablePresentationResult,
 } from './signing';
 import { DiscoveredVersion, IInternalPresentationDefinition, IPresentationDefinition, OrArray, PEVersion, SSITypesBuilder } from './types';
-import { calculateSdHash, definitionVersionDiscovery, getSubjectIdsAsString } from './utils';
+import { calculateSdHash, definitionVersionDiscovery, formatValidationErrors, getSubjectIdsAsString } from './utils';
 import { PresentationDefinitionV1VB, PresentationDefinitionV2VB, PresentationSubmissionVB, Validated, ValidationEngine } from './validation';
 
 export interface PEXOptions {
@@ -444,8 +444,21 @@ export class PEX {
   public static validateDefinition(presentationDefinition: IPresentationDefinition): Validated {
     const result = definitionVersionDiscovery(presentationDefinition);
     if (result.error) {
-      throw new Error(result.error);
+      const errorParts = [result.error];
+
+      const v1ErrorString = formatValidationErrors(result.v1Errors);
+      if (v1ErrorString) {
+        errorParts.push('\nVersion 1 validation errors:\n  ' + v1ErrorString);
+      }
+
+      const v2ErrorString = formatValidationErrors(result.v2Errors);
+      if (v2ErrorString) {
+        errorParts.push('\nVersion 2 validation errors:\n  ' + v2ErrorString);
+      }
+
+      throw new Error(errorParts.join(''));
     }
+
     const validators = [];
     result.version === PEVersion.v1
       ? validators.push({

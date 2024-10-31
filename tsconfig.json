@@ -38,7 +38,11 @@
     "lib": [
       "es7", "dom"
     ],*/
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/validation"
+    ]
   },
   "include": [
     "declarations.d.ts",

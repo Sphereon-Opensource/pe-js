@@ -8,6 +8,8 @@ import {
 } from '@sphereon/pex-models';
 import { IVerifiableCredential, IVerifiablePresentation } from '@sphereon/ssi-types';
 
+import { ValidationError } from '../validation/validators';
+
 export interface InputDescriptorWithIndex {
   inputDescriptorIndex: number;
   inputDescriptor: InputDescriptorV1 | InputDescriptorV2;
@@ -92,8 +94,8 @@ export class InternalPresentationDefinitionV2 implements PresentationDefinitionV
 export interface DiscoveredVersion {
   version?: PEVersion;
   error?: string;
-  v1Errors?: Record<string, unknown>;
-  v2Errors?: Record<string, unknown>;
+  v1Errors?: Array<ValidationError>;
+  v2Errors?: Array<ValidationError>;
 }
 
 export type IPresentationDefinition = PresentationDefinitionV1 | PresentationDefinitionV2;
