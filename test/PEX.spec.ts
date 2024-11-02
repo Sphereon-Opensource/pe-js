@@ -14,6 +14,7 @@ import {
 } from '@sphereon/ssi-types';
 
 import { IPresentationDefinition, PEX, PEXv2, Status, Validated } from '../lib';
+import { EvaluationClientWrapper } from '../lib/evaluation';
 import { PresentationEvaluationResults } from '../lib/evaluation/core';
 import { PresentationSubmissionLocation, VerifiablePresentationResult } from '../lib/signing/types';
 import { SSITypesBuilder } from '../lib/types';
@@ -27,6 +28,7 @@ import {
   getProofOptionsMock,
   getSingatureOptionsMock,
 } from './test_data/PresentationSignUtilMock';
+import { getFileAsEntity } from './utils/files';
 
 function getFile(path: string) {
   return fs.readFileSync(path, 'utf-8');
@@ -1578,5 +1580,36 @@ describe('evaluate', () => {
     const result = pex.selectFrom(pd, [...vcs, sdJwt]);
     expect(result.vcIndexes?.length).toEqual(1);
     expect(result.vcIndexes?.[0]).toEqual(3);
+  });
+
+  it('Evaluate Impierce VPs', () => {
+    const pdSchema = getFileAsEntity<PresentationDefinitionV2>('./test/dif_pe_examples/pdV2/impierce-example.json');
+    const vcArray = [getFile('./test/dif_pe_examples/vc/dienstjaar.jwt'), getFile('./test/dif_pe_examples/vc/neurolympics.jwt')];
+    const vpArray = [getFile('./test/dif_pe_examples/vp/dienstjaar.jwt'), getFile('./test/dif_pe_examples/vp/neurolympics.jwt')];
+    const pex: PEX = new PEX();
+    const clientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
+
+    const internalPD = SSITypesBuilder.modelEntityInternalPresentationDefinitionV2(pdSchema);
+    const wvcs = SSITypesBuilder.mapExternalVerifiableCredentialsToWrappedVcs(vcArray);
+    const resultSelectFrom = clientWrapper.selectFrom(internalPD, wvcs, {
+      holderDIDs: undefined,
+      limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
+    });
+    expect(resultSelectFrom.areRequiredCredentialsPresent).toEqual(Status.INFO);
+    expect(resultSelectFrom.verifiableCredential?.length).toEqual(2);
+
+    const presentationSubmission: PresentationSubmission = clientWrapper.submissionFrom(
+      internalPD,
+      SSITypesBuilder.mapExternalVerifiableCredentialsToWrappedVcs(resultSelectFrom.verifiableCredential as IVerifiableCredential[]),
+      { presentationSubmissionLocation: PresentationSubmissionLocation.EXTERNAL },
+    );
+
+    const evaluationResults = pex.evaluatePresentation(pdSchema, vpArray, {
+      limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
+      presentationSubmission,
+      presentationSubmissionLocation: PresentationSubmissionLocation.EXTERNAL,
+    });
+    expect(evaluationResults!.value!.descriptor_map!.length).toEqual(2);
+    expect(evaluationResults!.errors!.length).toEqual(0);
   });
 });

@@ -13,6 +13,7 @@ import {
 } from '@sphereon/ssi-types';
 
 import { Checked, Status } from '../ConstraintUtils';
+import { PEX } from '../PEX';
 import { PresentationSubmissionLocation } from '../signing';
 import {
   IInternalPresentationDefinition,
@@ -997,7 +998,18 @@ export class EvaluationClientWrapper {
 
   private updatePresentationSubmissionToExternal(presentationSubmission?: PresentationSubmission): PresentationSubmission {
     const descriptors = presentationSubmission?.descriptor_map ?? this._client.presentationSubmission.descriptor_map;
-    const updatedDescriptors = descriptors.map((d) => this.updateDescriptorToExternal(d));
+
+    // Get all VCs to check if they should be in separate VPs
+    const vcs = this._client.wrappedVcs.map((wvc) => wvc.original);
+    const useMultipleVPs = !PEX.allowMultipleVCsPerPresentation(vcs) && this._client.wrappedVcs.length > 1;
+
+    const updatedDescriptors = descriptors.map((d, index) => {
+      // If using multiple VPs, update path to include VP index
+      if (useMultipleVPs) {
+        return this.updateDescriptorToExternal(d, { vpIndex: index, vcIndex: 0 });
+      }
+      return this.updateDescriptorToExternal(d);
+    });
 
     if (presentationSubmission) {
       return {

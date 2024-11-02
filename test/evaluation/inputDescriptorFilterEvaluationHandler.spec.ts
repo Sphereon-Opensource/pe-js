@@ -1,14 +1,13 @@
-import fs from 'fs';
-
 import { PresentationSubmission } from '@sphereon/pex-models';
-import { IVerifiableCredential, IVerifiablePresentation } from '@sphereon/ssi-types';
+import { IVerifiablePresentation } from '@sphereon/ssi-types';
 
 import { HandlerCheckResult, Status } from '../../lib';
 import { EvaluationClient, EvaluationHandler } from '../../lib/evaluation';
 import { InputDescriptorFilterEvaluationHandler } from '../../lib/evaluation/handlers';
-import { InternalPresentationDefinitionV1 } from '../../lib/types/Internal.types';
+import { InternalPresentationDefinitionV1 } from '../../lib/types';
+import { SSITypesBuilder } from '../../lib/types';
 import PexMessages from '../../lib/types/Messages';
-import { SSITypesBuilder } from '../../lib/types/SSITypesBuilder';
+import { getFileAsEntity } from '../utils/files';
 
 const message: HandlerCheckResult = {
   input_descriptor_path: `$.input_descriptors[0]`,
@@ -19,23 +18,10 @@ const message: HandlerCheckResult = {
   message: PexMessages.INPUT_CANDIDATE_IS_ELIGIBLE_FOR_PRESENTATION_SUBMISSION,
 };
 
-function getFile(path: string): InternalPresentationDefinitionV1 | IVerifiablePresentation | IVerifiableCredential {
-  const file = JSON.parse(fs.readFileSync(path, 'utf-8'));
-  if (Object.keys(file).includes('presentation_definition')) {
-    return file.presentation_definition as InternalPresentationDefinitionV1;
-  } else if (Object.keys(file).includes('presentation_submission')) {
-    return file as IVerifiablePresentation;
-  } else {
-    return file as IVerifiableCredential;
-  }
-}
-
 describe('inputDescriptorFilterEvaluationHandler tests', () => {
   it(`input descriptor's constraint property missing`, () => {
-    const presentation: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
-    const presentationDefinition: InternalPresentationDefinitionV1 = getFile(
-      './test/resources/pd_input_descriptor_filter.json',
-    ) as InternalPresentationDefinitionV1;
+    const presentation: IVerifiablePresentation = getFileAsEntity<IVerifiablePresentation>('./test/dif_pe_examples/vp/vp_general.json');
+    const presentationDefinition = getFileAsEntity<InternalPresentationDefinitionV1>('./test/resources/pd_input_descriptor_filter.json');
     presentationDefinition.input_descriptors = [presentationDefinition.input_descriptors[0]];
     presentation.presentation_submission?.descriptor_map.forEach(
       (d, i, dm) => (dm[i].path = d.path.replace(/\$\.verifiableCredential\[(\d+)/g, '$[$1]')),
@@ -59,10 +45,8 @@ describe('inputDescriptorFilterEvaluationHandler tests', () => {
   });
 
   it(`input descriptor's constraints.fields property missing`, () => {
-    const presentation: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
-    const presentationDefinition: InternalPresentationDefinitionV1 = getFile(
-      './test/resources/pd_input_descriptor_filter.json',
-    ) as InternalPresentationDefinitionV1;
+    const presentation = getFileAsEntity<IVerifiablePresentation>('./test/dif_pe_examples/vp/vp_general.json');
+    const presentationDefinition = getFileAsEntity<InternalPresentationDefinitionV1>('./test/resources/pd_input_descriptor_filter.json');
     presentationDefinition.input_descriptors = [presentationDefinition.input_descriptors[1]];
     presentation.presentation_submission?.descriptor_map.forEach(
       (d, i, dm) => (dm[i].path = d.path.replace(/\$\.verifiableCredential\[(\d+)/g, '$[$1]')),
@@ -86,10 +70,8 @@ describe('inputDescriptorFilterEvaluationHandler tests', () => {
   });
 
   it(`input descriptor's constraints.fields.length is equal to 0`, () => {
-    const presentation: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
-    const presentationDefinition: InternalPresentationDefinitionV1 = getFile(
-      './test/resources/pd_input_descriptor_filter.json',
-    ) as InternalPresentationDefinitionV1;
+    const presentation = getFileAsEntity<IVerifiablePresentation>('./test/dif_pe_examples/vp/vp_general.json');
+    const presentationDefinition = getFileAsEntity<InternalPresentationDefinitionV1>('./test/resources/pd_input_descriptor_filter.json');
     presentationDefinition.input_descriptors = [presentationDefinition.input_descriptors[2]];
     presentation.presentation_submission?.descriptor_map.forEach(
       (d, i, dm) => (dm[i].path = d.path.replace(/\$\.verifiableCredential\[(\d+)/g, '$[$1]')),
@@ -113,10 +95,8 @@ describe('inputDescriptorFilterEvaluationHandler tests', () => {
   });
 
   it(`input descriptor's constraints.fields.path does not match`, () => {
-    const presentation: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
-    const presentationDefinition: InternalPresentationDefinitionV1 = getFile(
-      './test/resources/pd_input_descriptor_filter.json',
-    ) as InternalPresentationDefinitionV1;
+    const presentation = getFileAsEntity<IVerifiablePresentation>('./test/dif_pe_examples/vp/vp_general.json');
+    const presentationDefinition = getFileAsEntity<InternalPresentationDefinitionV1>('./test/resources/pd_input_descriptor_filter.json');
     presentationDefinition.input_descriptors = [presentationDefinition.input_descriptors[3]];
     presentation.presentation_submission?.descriptor_map.forEach(
       (d, i, dm) => (dm[i].path = d.path.replace(/\$\.verifiableCredential\[(\d+)/g, '$[$1]')),
@@ -143,10 +123,8 @@ describe('inputDescriptorFilterEvaluationHandler tests', () => {
   });
 
   it(`input descriptor's constraints.fields.filter does not match`, () => {
-    const presentation: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
-    const presentationDefinition: InternalPresentationDefinitionV1 = getFile(
-      './test/resources/pd_input_descriptor_filter.json',
-    ) as InternalPresentationDefinitionV1;
+    const presentation = getFileAsEntity<IVerifiablePresentation>('./test/dif_pe_examples/vp/vp_general.json');
+    const presentationDefinition = getFileAsEntity<InternalPresentationDefinitionV1>('./test/resources/pd_input_descriptor_filter.json');
     presentationDefinition.input_descriptors = [presentationDefinition.input_descriptors[4]];
     presentation.presentation_submission?.descriptor_map.forEach(
       (d, i, dm) => (dm[i].path = d.path.replace(/\$\.verifiableCredential\[(\d+)/g, '$[$1]')),
@@ -173,10 +151,8 @@ describe('inputDescriptorFilterEvaluationHandler tests', () => {
   });
 
   it(`input descriptor's constraint.fields.filter match`, () => {
-    const presentation: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
-    const presentationDefinition: InternalPresentationDefinitionV1 = getFile(
-      './test/resources/pd_input_descriptor_filter.json',
-    ) as InternalPresentationDefinitionV1;
+    const presentation = getFileAsEntity<IVerifiablePresentation>('./test/dif_pe_examples/vp/vp_general.json');
+    const presentationDefinition = getFileAsEntity<InternalPresentationDefinitionV1>('./test/resources/pd_input_descriptor_filter.json');
     presentationDefinition.input_descriptors = [presentationDefinition.input_descriptors[5]];
     presentation.presentation_submission?.descriptor_map.forEach(
       (d, i, dm) => (dm[i].path = d.path.replace(/\$\.verifiableCredential\[(\d+)/g, '$[$1]')),

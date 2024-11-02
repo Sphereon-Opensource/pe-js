@@ -1,5 +1,3 @@
-import fs from 'fs';
-
 import {
   AdditionalClaims,
   ICredential,
@@ -18,10 +16,7 @@ import PexMessages from '../../lib/types/Messages';
 import { LimitDisclosureEvaluationResults } from '../test_data/limitDisclosureEvaluation/limitDisclosureEvaluationResults';
 import { PdMultiCredentials } from '../test_data/limitDisclosureEvaluation/pdMultiCredentials';
 import { VcMultiCredentials } from '../test_data/limitDisclosureEvaluation/vcMultiCredentials';
-
-function getFile(path: string) {
-  return JSON.parse(fs.readFileSync(path, 'utf-8'));
-}
+import { getFileAsJson } from '../utils/files';
 
 const HOLDER_DID = ['did:example:ebfeb1f712ebc6f1c276e12ec21'];
 
@@ -29,11 +24,11 @@ const LIMIT_DISCLOSURE_SIGNATURE_SUITES = ['BbsBlsSignatureProof2020'];
 
 describe('evaluate', () => {
   it("should return ok if verifiable Credential doesn't have the etc field", () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile(
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson(
       './test/dif_pe_examples/pdV1/pd-simple-schema-age-predicate.json',
     ).presentation_definition;
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp-simple-age-predicate.json');
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp-simple-age-predicate.json');
     const evaluationClient: EvaluationClient = new EvaluationClient();
     const wvcs = SSITypesBuilder.mapExternalVerifiableCredentialsToWrappedVcs([vpSimple.verifiableCredential![0]]);
     evaluationClient.evaluate(pd, wvcs, { holderDIDs: HOLDER_DID, limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES });
@@ -42,10 +37,10 @@ describe('evaluate', () => {
   });
 
   it("should return ok if verifiable Credential doesn't have the birthPlace field", () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile(
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson(
       './test/dif_pe_examples/pdV1/pd-schema-multiple-constraints.json',
     ).presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp-multiple-constraints.json');
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp-multiple-constraints.json');
     const wvcs = SSITypesBuilder.mapExternalVerifiableCredentialsToWrappedVcs([vpSimple.verifiableCredential![0]]);
     pdSchema.input_descriptors[0].schema.push({ uri: 'https://www.w3.org/2018/credentials/v1' });
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
@@ -56,10 +51,10 @@ describe('evaluate', () => {
   });
 
   it('should report an error if limit disclosure is not supported', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile(
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson(
       './test/dif_pe_examples/pdV1/pd-schema-multiple-constraints.json',
     ).presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp-multiple-constraints.json');
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp-multiple-constraints.json');
     if ('type' in (<IVerifiableCredential>vpSimple.verifiableCredential![0]).proof) {
       (<IProof>(vpSimple.verifiableCredential![0] as IVerifiableCredential).proof).type = 'limit disclosure unsupported';
     }
@@ -80,10 +75,10 @@ describe('evaluate', () => {
   });
 
   it('should report an error if mandatory fields are absent', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile(
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson(
       './test/dif_pe_examples/pdV1/pd-schema-multiple-constraints.json',
     ).presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp-multiple-constraints.json');
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp-multiple-constraints.json');
     const vc: IVerifiableCredential = (<IVerifiableCredential>vpSimple.verifiableCredential![0]) as IVerifiableCredential;
     pdSchema.input_descriptors[0].schema.push({ uri: 'https://www.w3.org/2018/credentials/v1' });
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);

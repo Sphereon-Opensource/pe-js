@@ -13,8 +13,7 @@ import {
 
 import { Status } from '../../lib';
 import { EvaluationClient, EvaluationClientWrapper } from '../../lib/evaluation';
-import { InternalPresentationDefinitionV1, InternalPresentationDefinitionV2 } from '../../lib/types';
-import { SSITypesBuilder } from '../../lib/types';
+import { InternalPresentationDefinitionV1, InternalPresentationDefinitionV2, SSITypesBuilder } from '../../lib/types';
 import { hasher } from '../SdJwt.spec';
 
 import { EvaluationClientWrapperData } from './EvaluationClientWrapperData';

@@ -1,5 +1,3 @@
-import fs from 'fs';
-
 import { FilterV2, PresentationDefinitionV2 } from '@sphereon/pex-models';
 import { IProofType, IVerifiableCredential, IVerifiablePresentation } from '@sphereon/ssi-types';
 
@@ -13,10 +11,7 @@ import {
   getSingatureOptionsMock,
 } from './test_data/PresentationSignUtilMock';
 import { JwtVcs } from './test_data/jwtVcs';
-
-function getFile(path: string) {
-  return JSON.parse(fs.readFileSync(path, 'utf-8'));
-}
+import { getFileAsJson } from './utils/files';
 
 const LIMIT_DISCLOSURE_SIGNATURE_SUITES = [IProofType.BbsBlsSignatureProof2020];
 
@@ -262,15 +257,15 @@ describe('evaluate', () => {
   });
 
   it("Evaluate presentation submission of our vp_general's presentation_submission", () => {
-    const vpSimple = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const vpSimple = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     const result: Validated = PEX.validateSubmission(vpSimple.presentation_submission);
     expect(result).toEqual([{ message: 'ok', status: 'info', tag: 'root' }]);
   });
 
   //Credential does not contain the field
   it('should return a signed presentation with PdV2', async () => {
-    const pdSchema = getFile('./test/dif_pe_examples/pdV1/pd-simple-schema-age-predicate.json');
-    const vpSimple = getFile('./test/dif_pe_examples/vp/vp-simple-age-predicate.json') as IVerifiablePresentation;
+    const pdSchema = getFileAsJson('./test/dif_pe_examples/pdV1/pd-simple-schema-age-predicate.json');
+    const vpSimple = getFileAsJson('./test/dif_pe_examples/vp/vp-simple-age-predicate.json') as IVerifiablePresentation;
     const pex: PEXv2 = new PEXv2();
     delete pdSchema.presentation_definition.input_descriptors[0].schema;
     const vpr = await pex.verifiablePresentationFrom(pdSchema.presentation_definition, vpSimple.verifiableCredential!, assertedMockCallback, {
@@ -286,8 +281,8 @@ describe('evaluate', () => {
   });
 
   it("should throw error if proofOptions doesn't have a type", async () => {
-    const pdSchema = getFile('./test/dif_pe_examples/pdV1/pd_driver_license_name.json');
-    const vpSimple = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
+    const pdSchema = getFileAsJson('./test/dif_pe_examples/pdV1/pd_driver_license_name.json');
+    const vpSimple = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
     const pex: PEXv2 = new PEXv2();
     delete pdSchema.presentation_definition.input_descriptors[0].schema;
     const proofOptions = getProofOptionsMock();
@@ -304,8 +299,8 @@ describe('evaluate', () => {
 
   it('Evaluate selectFrom', () => {
     const pex: PEXv2 = new PEXv2();
-    const pdSchema: PresentationDefinitionV2 = getFile('./test/dif_pe_examples/pdV2/vc_expiration(corrected).json').presentation_definition;
-    const vc = getFile('./test/dif_pe_examples/vc/vc-PermanentResidentCard.json');
+    const pdSchema: PresentationDefinitionV2 = getFileAsJson('./test/dif_pe_examples/pdV2/vc_expiration(corrected).json').presentation_definition;
+    const vc = getFileAsJson('./test/dif_pe_examples/vc/vc-PermanentResidentCard.json');
     const result = pex.selectFrom(pdSchema, [vc], {
       holderDIDs: ['FAsYneKJhWBP2n5E21ZzdY'],
       limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
@@ -343,8 +338,8 @@ describe('evaluate', () => {
   });
 
   it("should throw error if proofOptions doesn't have a type with v2 pd", async () => {
-    const pdSchema = getFile('./test/dif_pe_examples/pdV2/vc_expiration(corrected).json');
-    const vpSimple = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
+    const pdSchema = getFileAsJson('./test/dif_pe_examples/pdV2/vc_expiration(corrected).json');
+    const vpSimple = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
     const pex: PEXv2 = new PEXv2();
     delete pdSchema.presentation_definition.input_descriptors[0].schema;
     const proofOptions = getProofOptionsMock();
@@ -413,7 +408,7 @@ describe('evaluate', () => {
     ];
     delete pd.input_descriptors[0].constraints!.limit_disclosure;
 
-    const vpSimple = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
+    const vpSimple = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
     const pex: PEXv2 = new PEXv2();
     const result = pex.selectFrom(pd, [vpSimple.verifiableCredential![0]], {
       holderDIDs: ['FAsYneKJhWBP2n5E21ZzdY'],
@@ -437,7 +432,7 @@ describe('evaluate', () => {
     ];
     delete pd.input_descriptors[0].constraints!.limit_disclosure;
 
-    const vpSimple = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
+    const vpSimple = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
     const pex: PEXv2 = new PEXv2();
     const result = pex.selectFrom(pd, [vpSimple.verifiableCredential![0]], {
       holderDIDs: ['FAsYneKJhWBP2n5E21ZzdY'],
@@ -461,7 +456,7 @@ describe('evaluate', () => {
     ];
     delete pd.input_descriptors[0].constraints!.limit_disclosure;
 
-    const vpSimple = getFile('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
+    const vpSimple = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json') as IVerifiablePresentation;
     const pex: PEXv2 = new PEXv2();
     const result = pex.selectFrom(pd, [vpSimple.verifiableCredential![0]], {
       holderDIDs: ['FAsYneKJhWBP2n5E21ZzdY'],

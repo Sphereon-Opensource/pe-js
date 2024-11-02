@@ -1,19 +1,14 @@
-import fs from 'fs';
-
 import { IVerifiableCredential, WrappedVerifiableCredential } from '@sphereon/ssi-types';
 
 import { EvaluationClient } from '../../lib/evaluation';
 import { SubjectIsIssuerEvaluationHandler } from '../../lib/evaluation/handlers';
 import { InternalPresentationDefinitionV1, SSITypesBuilder } from '../../lib/types';
 import PexMessages from '../../lib/types/Messages';
-
-function getFile(path: string) {
-  return JSON.parse(fs.readFileSync(path, 'utf-8'));
-}
+import { getFileAsJson } from '../utils/files';
 
 describe('evaluate', () => {
   it('should return ok if subject_is_issuer is verified', function () {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile(
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson(
       './test/dif_pe_examples/pdV1/pd-simple-schema-subject-is-issuer.json',
     ).presentation_definition;
     const evaluationClient: EvaluationClient = new EvaluationClient();
@@ -61,7 +56,7 @@ describe('evaluate', () => {
   });
 
   it('should return ok if subject_is_issuer is verified with multiple subjects', function () {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile(
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson(
       './test/dif_pe_examples/pdV1/pd-simple-schema-subject-is-issuer.json',
     ).presentation_definition;
     const evaluationClient: EvaluationClient = new EvaluationClient();
@@ -117,7 +112,7 @@ describe('evaluate', () => {
   });
 
   it('should return error if subject_is_issuer is verified with multiple subjects one of which is not the issuer', function () {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile(
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson(
       './test/dif_pe_examples/pdV1/pd-simple-schema-subject-is-issuer.json',
     ).presentation_definition;
     const evaluationClient: EvaluationClient = new EvaluationClient();
@@ -173,7 +168,7 @@ describe('evaluate', () => {
   });
 
   it('should return ok if subject_is_issuer is verified with multiple subjects and issuer object', function () {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile(
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson(
       './test/dif_pe_examples/pdV1/pd-simple-schema-subject-is-issuer.json',
     ).presentation_definition;
     const evaluationClient: EvaluationClient = new EvaluationClient();
@@ -230,7 +225,7 @@ describe('evaluate', () => {
   });
 
   it('should return error if subject_is_issuer is not verified', function () {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile(
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson(
       './test/dif_pe_examples/pdV1/pd-simple-schema-subject-is-issuer.json',
     ).presentation_definition;
     const evaluationClient: EvaluationClient = new EvaluationClient();

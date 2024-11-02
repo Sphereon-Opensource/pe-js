@@ -1,17 +1,12 @@
-import fs from 'fs';
-
 import { PresentationSubmission } from '@sphereon/pex-models';
 
 import { Checked, Status, ValidationEngine } from '../../../lib';
 import { PresentationSubmissionVB, ValidationBundler } from '../../../lib/validation';
-
-function getFile(path: string) {
-  return JSON.parse(fs.readFileSync(path, 'utf-8'));
-}
+import { getFileAsJson } from '../../utils/files';
 
 describe('validate', () => {
   it('should not return error for correct presentation submission', () => {
-    const basicPS = getFile('./test/resources/ps_basic.json');
+    const basicPS = getFileAsJson('./test/resources/ps_basic.json');
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
 
@@ -20,7 +15,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty id', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS!.id = '';
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
@@ -30,7 +25,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty definition_id', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS.definition_id = '';
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
@@ -40,7 +35,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty descriptor_map', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS.descriptor_map = [];
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
@@ -50,7 +45,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty descriptor id', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS!.descriptor_map![0]!.id = '';
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
@@ -60,7 +55,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty descriptor path', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS.descriptor_map[0].path = '';
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
@@ -70,7 +65,7 @@ describe('validate', () => {
   });
 
   it('should return error for invalid descriptor path', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS!.descriptor_map![0]!.path = '^.';
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
@@ -80,7 +75,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty descriptor path', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS.descriptor_map[0].format = '';
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
@@ -90,7 +85,7 @@ describe('validate', () => {
   });
 
   it('should return error for invalid descriptor path', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS!.descriptor_map![0]!.format = '^.';
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
@@ -100,7 +95,7 @@ describe('validate', () => {
   });
 
   it('should return error for invalid nested id', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS!.descriptor_map![0]!.path_nested!.id = '';
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
@@ -110,7 +105,7 @@ describe('validate', () => {
   });
 
   it('should return error for invalid nested path', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS!.descriptor_map![0]!.path_nested!.path = '';
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');
@@ -120,7 +115,7 @@ describe('validate', () => {
   });
 
   it('should return error for id in the descriptor to be different in nested objects', () => {
-    const basicPS: PresentationSubmission = getFile('./test/resources/ps_basic.json');
+    const basicPS: PresentationSubmission = getFileAsJson('./test/resources/ps_basic.json');
     basicPS!.descriptor_map![0]!.path_nested!.id = 'a';
 
     const vb: ValidationBundler<PresentationSubmission> = new PresentationSubmissionVB('root');

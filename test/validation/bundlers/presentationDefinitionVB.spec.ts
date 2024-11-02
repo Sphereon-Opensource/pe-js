@@ -4,10 +4,7 @@ import { InputDescriptorV2, PresentationDefinitionV1, PresentationDefinitionV2 }
 
 import { Checked, Status } from '../../../lib';
 import { PresentationDefinitionV1VB, PresentationDefinitionV2VB, ValidationBundler, ValidationEngine } from '../../../lib/validation';
-
-function getFile(path: string) {
-  return JSON.parse(fs.readFileSync(path, 'utf-8'));
-}
+import { getFileAsEntity, getFileAsJson } from '../../utils/files';
 
 const baseV1 = './test/dif_pe_examples/pdV1/';
 const baseV2 = './test/dif_pe_examples/pdV2/';
@@ -64,25 +61,25 @@ function getPresentationDefinitionV2(): PresentationDefinitionV2 {
 }
 describe('validate', () => {
   test.each(filesV1)('V1.validateKnownExample(%s)', (file) => {
-    const basicPD = getFile(baseV1 + file);
+    const basicPD = getFileAsEntity<PresentationDefinitionV1>(baseV1 + file);
 
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
 
-    const result = new ValidationEngine().validate([{ bundler: vb, target: basicPD.presentation_definition }]);
+    const result = new ValidationEngine().validate([{ bundler: vb, target: basicPD }]);
     expect(result).toEqual([new Checked('root', Status.INFO, 'ok')]);
   });
 
   test.each(filesV2)('V2.validateKnownExample(%s)', (file) => {
-    const basicPD = getFile(baseV2 + file);
+    const basicPD = getFileAsEntity<PresentationDefinitionV2>(baseV2 + file);
 
     const vb: ValidationBundler<PresentationDefinitionV2> = new PresentationDefinitionV2VB('root');
 
-    const result = new ValidationEngine().validate([{ bundler: vb, target: basicPD.presentation_definition }]);
+    const result = new ValidationEngine().validate([{ bundler: vb, target: basicPD }]);
     expect(result).toEqual([new Checked('root', Status.INFO, 'ok')]);
   });
 
   it('should return error for empty id v1', () => {
-    const basicPD: PresentationDefinitionV1 = getFile('./test/resources/pd_basic.json');
+    const basicPD: PresentationDefinitionV1 = getFileAsJson('./test/resources/pd_basic.json');
     basicPD.id = '';
 
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
@@ -101,7 +98,7 @@ describe('validate', () => {
   });
 
   it('should not return error for missing name v1', () => {
-    const basicPD: PresentationDefinitionV1 = getFile('./test/resources/pd_basic.json');
+    const basicPD: PresentationDefinitionV1 = getFileAsJson('./test/resources/pd_basic.json');
     delete basicPD.name;
 
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
@@ -121,7 +118,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty name v1', () => {
-    const basicPD: PresentationDefinitionV1 = getFile('./test/resources/pd_basic.json');
+    const basicPD: PresentationDefinitionV1 = getFileAsJson('./test/resources/pd_basic.json');
     basicPD.name = '';
 
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
@@ -141,7 +138,7 @@ describe('validate', () => {
   });
 
   it('should not return error for missing purpose v1', () => {
-    const basicPD: PresentationDefinitionV1 = getFile('./test/resources/pd_basic.json');
+    const basicPD: PresentationDefinitionV1 = getFileAsJson('./test/resources/pd_basic.json');
     delete basicPD.purpose;
 
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
@@ -161,7 +158,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty purpose v1', () => {
-    const basicPD: PresentationDefinitionV1 = getFile('./test/resources/pd_basic.json');
+    const basicPD: PresentationDefinitionV1 = getFileAsJson('./test/resources/pd_basic.json');
     basicPD.purpose = '';
 
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
@@ -171,7 +168,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty purpose v2', () => {
-    const basicPD: PresentationDefinitionV2 = getFile('./test/resources/pd_basic.json');
+    const basicPD: PresentationDefinitionV2 = getFileAsJson('./test/resources/pd_basic.json');
     delete basicPD.input_descriptors[0]['schema' as keyof InputDescriptorV2];
     basicPD.purpose = '';
 
@@ -182,7 +179,7 @@ describe('validate', () => {
   });
 
   it('should not return error for missing format v1', () => {
-    const basicPD: PresentationDefinitionV1 = getFile('./test/resources/pd_basic.json');
+    const basicPD: PresentationDefinitionV1 = getFileAsJson('./test/resources/pd_basic.json');
     delete basicPD.format;
 
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
@@ -202,7 +199,7 @@ describe('validate', () => {
   });
 
   it('should not return error for empty format v1', () => {
-    const basicPD: PresentationDefinitionV1 = getFile('./test/resources/pd_basic.json');
+    const basicPD: PresentationDefinitionV1 = getFileAsJson('./test/resources/pd_basic.json');
     basicPD.format = {};
 
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
@@ -222,7 +219,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty algo v1', () => {
-    const basicPD: PresentationDefinitionV1 = getFile('./test/resources/pd_basic.json');
+    const basicPD: PresentationDefinitionV1 = getFileAsJson('./test/resources/pd_basic.json');
     basicPD!.format = { jwt: { alg: [] } };
 
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
@@ -248,7 +245,7 @@ describe('validate', () => {
   });
 
   it('should return error for empty algo value v1', () => {
-    const basicPD: PresentationDefinitionV1 = getFile('./test/resources/pd_basic.json');
+    const basicPD: PresentationDefinitionV1 = getFileAsJson('./test/resources/pd_basic.json');
     basicPD!.format!.jwt!.alg = [''];
 
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
@@ -272,7 +269,7 @@ describe('validate', () => {
   });
 
   it('should report error for duplicate id', () => {
-    const basicPD: PresentationDefinitionV1 = getFile('./test/resources/pd_require_is_holder.json').presentation_definition;
+    const basicPD: PresentationDefinitionV1 = getFileAsJson('./test/resources/pd_require_is_holder.json').presentation_definition;
     const vb: ValidationBundler<PresentationDefinitionV1> = new PresentationDefinitionV1VB('root');
     const ve = new ValidationEngine();
     basicPD.input_descriptors[0].constraints!.fields![0]!.id = 'uuid2021-05-04 00';

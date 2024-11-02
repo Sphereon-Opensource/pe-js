@@ -319,14 +319,14 @@ export class PEX {
     if (!selectedCredentials) {
       throw Error(`At least a verifiable credential needs to be passed in to create a presentation`);
     }
-    const verifiableCredential = (Array.isArray(selectedCredentials) ? selectedCredentials : [selectedCredentials]) as W3CVerifiableCredential[];
-    if (verifiableCredential.some((c) => CredentialMapper.isSdJwtDecodedCredential(c) || CredentialMapper.isSdJwtEncoded(c))) {
+    const verifiableCredentials = (Array.isArray(selectedCredentials) ? selectedCredentials : [selectedCredentials]) as W3CVerifiableCredential[];
+    if (verifiableCredentials.some((c) => CredentialMapper.isSdJwtDecodedCredential(c) || CredentialMapper.isSdJwtEncoded(c))) {
       if (!this.options?.hasher) {
         throw new Error('Hasher must be provided when creating a presentation with an SD-JWT VC');
       }
     }
 
-    const wVCs = verifiableCredential.map((vc) => CredentialMapper.toWrappedVerifiableCredential(vc, { hasher: this.options?.hasher }));
+    const wVCs = verifiableCredentials.map((vc) => CredentialMapper.toWrappedVerifiableCredential(vc, { hasher: this.options?.hasher }));
     const holders = Array.from(new Set(wVCs.flatMap((wvc) => getSubjectIdsAsString(wvc.credential as ICredential))));
     if (holders.length !== 1 && !opts?.holderDID) {
       console.log(
@@ -362,17 +362,17 @@ export class PEX {
       }
     }
     const result: Array<IPresentation | PartialSdJwtDecodedVerifiableCredential> = [];
-    if (PEX.allowMultipleVCsPerPresentation(verifiableCredential)) {
+    if (PEX.allowMultipleVCsPerPresentation(verifiableCredentials)) {
       result.push({
         ...opts?.basePresentationPayload,
         '@context': context,
         type,
         holder,
         ...(!!opts?.presentationSubmission && { presentation_submission: opts.presentationSubmission }),
-        verifiableCredential,
+        verifiableCredential: verifiableCredentials,
       });
     } else {
-      verifiableCredential.forEach((vc) => {
+      verifiableCredentials.forEach((vc) => {
         if (CredentialMapper.isSdJwtDecodedCredential(vc)) {
           result.push(vc as PartialSdJwtDecodedVerifiableCredential);
         } else if (CredentialMapper.isSdJwtEncoded(vc)) {
@@ -397,7 +397,7 @@ export class PEX {
   /*
     TODO SDK-37 refinement needed
    */
-  private static allowMultipleVCsPerPresentation(verifiableCredentials: Array<OriginalVerifiableCredential>): boolean {
+  public static allowMultipleVCsPerPresentation(verifiableCredentials: Array<OriginalVerifiableCredential>): boolean {
     const jwtCredentials = verifiableCredentials.filter((c) => CredentialMapper.isJwtEncoded(c) || CredentialMapper.isJwtDecodedCredential(c));
 
     if (jwtCredentials.length > 0) {

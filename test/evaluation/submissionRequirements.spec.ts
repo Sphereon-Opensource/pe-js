@@ -1,15 +1,9 @@
-import fs from 'fs';
-
 import { PresentationSubmission } from '@sphereon/pex-models';
 import { IVerifiablePresentation, WrappedVerifiableCredential } from '@sphereon/ssi-types';
 
 import { EvaluationClientWrapper } from '../../lib/evaluation';
-import { InternalPresentationDefinitionV1 } from '../../lib/types';
-import { SSITypesBuilder } from '../../lib/types';
-
-function getFile(path: string) {
-  return JSON.parse(fs.readFileSync(path, 'utf-8'));
-}
+import { InternalPresentationDefinitionV1, SSITypesBuilder } from '../../lib/types';
+import { getFileAsJson } from '../utils/files';
 
 const HOLDER_DIDs = ['did:example:ebfeb1f712ebc6f1c276e12ec21'];
 
@@ -17,8 +11,8 @@ const LIMIT_DISCLOSURE_SIGNATURE_SUITES = ['BbsBlsSignatureProof2020'];
 
 describe('Submission requirements tests', () => {
   it('Evaluate submission requirements all from group A', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![0]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -45,8 +39,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements min 2 from group B', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![1]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -70,8 +64,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements either all from group A or 2 from group B', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![2]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -87,8 +81,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements max 2 from group B', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![3]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -114,8 +108,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements min 3 from group B', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![4]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -131,8 +125,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements max 1 from group B', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![5]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -148,8 +142,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements exactly 1 from group B', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![6]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -165,8 +159,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements all from group B', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![7]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -198,8 +192,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements all from group A and 2 from group B', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![8]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -226,8 +220,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements min 1: (all from group A or 2 from group B)', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![9]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -254,8 +248,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements max 2: (all from group A and 2 from group B)', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![10]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -282,8 +276,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements min 3: (all from group A or 2 from group B + unexistent)', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![11]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
@@ -299,8 +293,8 @@ describe('Submission requirements tests', () => {
   });
 
   it('Evaluate submission requirements max 1: (all from group A and 2 from group B)', () => {
-    const pdSchema: InternalPresentationDefinitionV1 = getFile('./test/resources/sr_rules.json').presentation_definition;
-    const vpSimple: IVerifiablePresentation = getFile('./test/dif_pe_examples/vp/vp_general.json');
+    const pdSchema: InternalPresentationDefinitionV1 = getFileAsJson('./test/resources/sr_rules.json').presentation_definition;
+    const vpSimple: IVerifiablePresentation = getFileAsJson('./test/dif_pe_examples/vp/vp_general.json');
     pdSchema!.submission_requirements = [pdSchema!.submission_requirements![12]];
     const pd = SSITypesBuilder.modelEntityToInternalPresentationDefinitionV1(pdSchema);
     const evaluationClientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();

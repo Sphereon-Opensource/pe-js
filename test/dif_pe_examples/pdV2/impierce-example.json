@@ -1,0 +1,37 @@
+{
+  "id": "Verifiable Presentation request for sign-on",
+  "input_descriptors": [
+    {
+      "id": "Request for Dienjaar credential",
+      "constraints": {
+        "fields": [
+          {
+            "path": [
+              "$.vc.credentialSubject.achievement.name"
+            ],
+            "filter": {
+              "type": "string",
+              "const": "Dienjaar"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "Request for BrainsFirst credential",
+      "constraints": {
+        "fields": [
+          {
+            "path": [
+              "$.vc.credentialSubject.achievement.name"
+            ],
+            "filter": {
+              "type": "string",
+              "const": "NeurOlympics"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}
