@@ -402,21 +402,19 @@ export class PEX {
 
     if (jwtCredentials.length > 0) {
       const subjects = new Set<string>();
-//      const verificationMethods = new Set<string>();
+      //      const verificationMethods = new Set<string>();
 
       for (const credential of jwtCredentials) {
         const decodedCredential = CredentialMapper.isJwtEncoded(credential)
           ? (CredentialMapper.decodeVerifiableCredential(credential) as JwtDecodedVerifiableCredential)
           : (credential as JwtDecodedVerifiableCredential);
 
-        const subject =
-          decodedCredential.sub ||
-          (decodedCredential.vc && decodedCredential.sub);
+        const subject = decodedCredential.sub || (decodedCredential.vc && decodedCredential.sub);
         if (subject) {
           subjects.add(subject);
         }
 
-/*
+        /*
         const vcProof = decodedCredential.proof ?? decodedCredential.vc.proof;
         const proofs = Array.isArray(vcProof) ? vcProof : [vcProof];
         proofs.filter((proof: IProof) => proof.verificationMethod).forEach((proof: IProof) => verificationMethods.add(proof.verificationMethod));
@@ -424,7 +422,7 @@ export class PEX {
       }
 
       // If there's more than one unique subject or verification method, we can't allow multiple VCs in a single presentation
-      if (subjects.size > 1 ) {
+      if (subjects.size > 1) {
         return false;
       }
     }
