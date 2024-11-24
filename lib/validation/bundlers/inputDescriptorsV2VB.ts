@@ -9,7 +9,6 @@ import { ValidationBundler } from './validationBundler';
 export class InputDescriptorsV2VB extends ValidationBundler<InputDescriptorV2[]> {
   private readonly idMustBeNonEmptyStringMsg = 'input descriptor id must be non-empty string';
   private readonly nameShouldBeNonEmptyStringMsg = 'input descriptor name should be non-empty string';
-  private readonly purposeShouldBeNonEmptyStringMsg = 'input descriptor purpose should be non-empty string';
 
   constructor(parentTag: string) {
     super(parentTag, 'input_descriptor');
@@ -76,12 +75,6 @@ export class InputDescriptorsV2VB extends ValidationBundler<InputDescriptorV2[]>
         target: inputDescriptor,
         predicate: (inDesc: InputDescriptorV2) => ObjectValidationUtils.optionalNonEmptyString(inDesc?.name),
         message: this.nameShouldBeNonEmptyStringMsg,
-      },
-      {
-        tag: this.getMyTag(inDescInd),
-        target: inputDescriptor,
-        predicate: (inDesc: InputDescriptorV2) => ObjectValidationUtils.optionalNonEmptyString(inDesc?.purpose),
-        message: this.purposeShouldBeNonEmptyStringMsg,
       },
     ];
   }
