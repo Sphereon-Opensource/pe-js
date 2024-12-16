@@ -1,0 +1,55 @@
+{
+  "presentation_definition": {
+    "id": "56e001a9-c41f-49c5-9b12-440ad4861f58",
+    "name": "DIIP v3 compliance",
+    "purpose": "Prove you're compliant with DIIP v3",
+    "input_descriptors": [
+      {
+        "id": "b2a1f1d3-37ee-4494-98e2-ef9853b28197",
+        "name": "DIIP v3 compliance",
+        "purpose": "Prove you're compliant with DIIP v3",
+        "format": {
+          "vc+sd-jwt": {}
+        },
+        "constraints": {
+          "limit_disclosure": "preferred",
+          "fields": [
+            {
+              "path": ["$.compliant"],
+              "name": "compliant",
+              "filter": {
+                "type": "boolean",
+                "enum": [
+                    true,
+                    false
+                  ]
+              }
+            },
+            {
+              "path": ["$.name"],
+              "name": "name",
+              "filter": {
+                "type": "string",
+                "enum": [
+                    "https://example.bmi.bund.de/credential/pid/1.0",
+                    "urn:eu.europa.ec.eudi:pid:1"
+                  ]
+              }
+            },
+            {
+              "path": ["$.age"],
+              "name": "age",
+              "filter": {
+                "type": "number",
+                "enum": [
+                  12,
+                  135
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
