@@ -930,6 +930,7 @@ describe('evaluate', () => {
       warnings: [],
       vcIndexes: [0],
     });
+  });
 
   it('selectFrom with vc+sd-jwt format compact - enum new PID format', async () => {
     const result = pex.selectFrom(getPresentationDefinitionV2_with_enum(), [decodedSdJwtVcNewPid.compactSdJwtVc]);
