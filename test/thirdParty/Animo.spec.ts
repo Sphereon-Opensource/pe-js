@@ -2,7 +2,6 @@ import { Rules } from '@sphereon/pex-models';
 import { W3CVerifiableCredential } from '@sphereon/ssi-types';
 
 import { IPresentationDefinition, PEX, Status } from '../../lib';
-import { SubmissionRequirementMatchType } from '../../lib/evaluation/core';
 
 describe('evaluate animo tests', () => {
   it('should pass with 2 VCs and 2 IDs', () => {
@@ -136,22 +135,40 @@ describe('evaluate animo tests', () => {
     expect(result.areRequiredCredentialsPresent).toEqual(Status.INFO);
     expect(result.matches).toEqual([
       {
-        count: 1,
-        from: 'A',
         id: 0,
-        name: undefined,
-        rule: 'pick',
-        type: SubmissionRequirementMatchType.SubmissionRequirement,
-        vc_path: ['$.verifiableCredential[0]'],
+        type: 'SubmissionRequirement',
+        from: 'A',
+        areRequiredCredentialsPresent: 'info',
+        rule: {
+          type: 'pick',
+          count: 1,
+        },
+        input_descriptors: [
+          {
+            id: 'c2834d0e-3c95-4721-b21a-40e3d7ea2549',
+            type: 'InputDescriptor',
+            vc_path: ['$.verifiableCredential[0]'],
+            areRequiredCredentialsPresent: 'info',
+          },
+        ],
       },
       {
-        count: 1,
-        from: 'B',
         id: 1,
-        name: undefined,
-        rule: 'pick',
-        type: SubmissionRequirementMatchType.SubmissionRequirement,
-        vc_path: ['$.verifiableCredential[1]'],
+        type: 'SubmissionRequirement',
+        from: 'B',
+        areRequiredCredentialsPresent: 'info',
+        rule: {
+          type: 'pick',
+          count: 1,
+        },
+        input_descriptors: [
+          {
+            id: 'c2834d0e-3c95-4721-b21a-40e3d7ea25434',
+            type: 'InputDescriptor',
+            vc_path: ['$.verifiableCredential[1]'],
+            areRequiredCredentialsPresent: 'info',
+          },
+        ],
       },
     ]);
   });

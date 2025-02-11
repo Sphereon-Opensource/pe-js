@@ -1,4 +1,4 @@
-import { PresentationSubmission, Rules } from '@sphereon/pex-models';
+import { PresentationSubmission } from '@sphereon/pex-models';
 import { IVerifiableCredential } from '@sphereon/ssi-types';
 
 import { HandlerCheckResult, SelectResults, Status } from '../../lib';
@@ -196,7 +196,7 @@ export class EvaluationClientWrapperData {
       matches: [
         {
           name: 'test',
-          rule: Rules.All,
+          areRequiredCredentialsPresent: 'info',
           vc_path: ['$.verifiableCredential[0]'],
           id: 'Educational transcripts',
           type: SubmissionRequirementMatchType.InputDescriptor,

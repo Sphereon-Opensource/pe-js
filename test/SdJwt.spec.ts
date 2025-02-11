@@ -123,9 +123,87 @@ const decodedSdJwtVcWithDisclosuresRemoved = {
   signedPayload: decodedSdJwtVc.signedPayload,
 } satisfies SdJwtDecodedVerifiableCredential;
 
+const pidSdJwt =
+  'eyJ4NWMiOlsiTUlJQ2REQ0NBaHVnQXdJQkFnSUJBakFLQmdncWhrak9QUVFEQWpDQmlERUxNQWtHQTFVRUJoTUNSRVV4RHpBTkJnTlZCQWNNQmtKbGNteHBiakVkTUJzR0ExVUVDZ3dVUW5WdVpHVnpaSEoxWTJ0bGNtVnBJRWR0WWtneEVUQVBCZ05WQkFzTUNGUWdRMU1nU1VSRk1UWXdOQVlEVlFRRERDMVRVRkpKVGtRZ1JuVnVhMlVnUlZWRVNTQlhZV3hzWlhRZ1VISnZkRzkwZVhCbElFbHpjM1ZwYm1jZ1EwRXdIaGNOTWpRd05UTXhNRGd4TXpFM1doY05NalV3TnpBMU1EZ3hNekUzV2pCc01Rc3dDUVlEVlFRR0V3SkVSVEVkTUJzR0ExVUVDZ3dVUW5WdVpHVnpaSEoxWTJ0bGNtVnBJRWR0WWtneENqQUlCZ05WQkFzTUFVa3hNakF3QmdOVkJBTU1LVk5RVWtsT1JDQkdkVzVyWlNCRlZVUkpJRmRoYkd4bGRDQlFjbTkwYjNSNWNHVWdTWE56ZFdWeU1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRU9GQnE0WU1LZzR3NWZUaWZzeXR3QnVKZi83RTdWaFJQWGlObTUyUzNxMUVUSWdCZFh5REsza1Z4R3hnZUhQaXZMUDN1dU12UzZpREVjN3FNeG12ZHVLT0JrRENCalRBZEJnTlZIUTRFRmdRVWlQaENrTEVyRFhQTFcyL0owV1ZlZ2h5dyttSXdEQVlEVlIwVEFRSC9CQUl3QURBT0JnTlZIUThCQWY4RUJBTUNCNEF3TFFZRFZSMFJCQ1l3SklJaVpHVnRieTV3YVdRdGFYTnpkV1Z5TG1KMWJtUmxjMlJ5ZFdOclpYSmxhUzVrWlRBZkJnTlZIU01FR0RBV2dCVFVWaGpBaVRqb0RsaUVHTWwyWXIrcnU4V1F2akFLQmdncWhrak9QUVFEQWdOSEFEQkVBaUFiZjVUemtjUXpoZldvSW95aTFWTjdkOEk5QnNGS20xTVdsdVJwaDJieUdRSWdLWWtkck5mMnhYUGpWU2JqVy9VLzVTNXZBRUM1WHhjT2FudXNPQnJvQmJVPSIsIk1JSUNlVENDQWlDZ0F3SUJBZ0lVQjVFOVFWWnRtVVljRHRDaktCL0gzVlF2NzJnd0NnWUlLb1pJemowRUF3SXdnWWd4Q3pBSkJnTlZCQVlUQWtSRk1ROHdEUVlEVlFRSERBWkNaWEpzYVc0eEhUQWJCZ05WQkFvTUZFSjFibVJsYzJSeWRXTnJaWEpsYVNCSGJXSklNUkV3RHdZRFZRUUxEQWhVSUVOVElFbEVSVEUyTURRR0ExVUVBd3d0VTFCU1NVNUVJRVoxYm10bElFVlZSRWtnVjJGc2JHVjBJRkJ5YjNSdmRIbHdaU0JKYzNOMWFXNW5JRU5CTUI0WERUSTBNRFV6TVRBMk5EZ3dPVm9YRFRNME1EVXlPVEEyTkRnd09Wb3dnWWd4Q3pBSkJnTlZCQVlUQWtSRk1ROHdEUVlEVlFRSERBWkNaWEpzYVc0eEhUQWJCZ05WQkFvTUZFSjFibVJsYzJSeWRXTnJaWEpsYVNCSGJXSklNUkV3RHdZRFZRUUxEQWhVSUVOVElFbEVSVEUyTURRR0ExVUVBd3d0VTFCU1NVNUVJRVoxYm10bElFVlZSRWtnVjJGc2JHVjBJRkJ5YjNSdmRIbHdaU0JKYzNOMWFXNW5JRU5CTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWUd6ZHdGRG5jNytLbjVpYkF2Q09NOGtlNzdWUXhxZk1jd1pMOElhSUErV0NST2NDZm1ZL2dpSDkycU1ydTVwL2t5T2l2RTBSQy9JYmRNT052RG9VeWFObU1HUXdIUVlEVlIwT0JCWUVGTlJXR01DSk9PZ09XSVFZeVhaaXY2dTd4WkMrTUI4R0ExVWRJd1FZTUJhQUZOUldHTUNKT09nT1dJUVl5WFppdjZ1N3haQytNQklHQTFVZEV3RUIvd1FJTUFZQkFmOENBUUF3RGdZRFZSMFBBUUgvQkFRREFnR0dNQW9HQ0NxR1NNNDlCQU1DQTBjQU1FUUNJR0VtN3drWktIdC9hdGI0TWRGblhXNnlybndNVVQydTEzNmdkdGwxMFk2aEFpQnVURnF2Vll0aDFyYnh6Q1AweFdaSG1RSzlrVnl4bjhHUGZYMjdFSXp6c3c9PSJdLCJraWQiOiJNSUdVTUlHT3BJR0xNSUdJTVFzd0NRWURWUVFHRXdKRVJURVBNQTBHQTFVRUJ3d0dRbVZ5YkdsdU1SMHdHd1lEVlFRS0RCUkNkVzVrWlhOa2NuVmphMlZ5WldrZ1IyMWlTREVSTUE4R0ExVUVDd3dJVkNCRFV5QkpSRVV4TmpBMEJnTlZCQU1NTFZOUVVrbE9SQ0JHZFc1clpTQkZWVVJKSUZkaGJHeGxkQ0JRY205MGIzUjVjR1VnU1hOemRXbHVaeUJEUVFJQkFnPT0iLCJ0eXAiOiJ2YytzZC1qd3QiLCJhbGciOiJFUzI1NiJ9.eyJwbGFjZV9vZl9iaXJ0aCI6eyJfc2QiOlsiVS01ZlVXLU5EM1laajZTcUdyQXV4NXJWYWZOalhqZ2hvMmRUUmpQX3hOTSJdfSwiX3NkIjpbIjlFaUpQNEw2NDI0bEtTVGs5NHpIOWhaWVc5UjNuS1R3V0V5TVBJN2dvWHciLCJHVlhRWEtFMmpWR1d0VEF6T1d5ck85TTZySW1qYkZJWGFnRkMyWElMbGhJIiwiUUV2bHpNd0ozZS1tOEtpWEk5bGx2bnVQblh5UHRXN2VCSF9GcXFVTnk3WSIsImljWkpTRkFqLVg3T29Sam5vRFRReXFwU1dNQUVuaTcydWZDZmFFWC1uQkUiLCJsUHJqb3BqbEN5bFdHWVo0cmh4S1RUTUsxS3p1Sm5ISUtybzNwUUhlUXF3IiwicjJORHZtRFY3QmU3TlptVFR0VE9fekdZX3RTdWdYVXoxeDJBXzZuOFhvdyIsInJPbjFJUkpUQWtEV1pSTGc3MUYzaDVsbFpPc1ZPMl9aemlOUy1majNEUFUiXSwiYWRkcmVzcyI6eyJfc2QiOlsiQnI1aVZtZnZlaTloQ01mMktVOGRFVjFER2hrdUtsQ1pUeGFEQ0FMb3NJbyIsIkx6czJpR09SNHF0clhhYmdwMzFfcjFFUFNmazlaUDJQRElJUTRQaHlPT00iLCJadUV5cG41Y0s0WVpWdHdkeGFoWXJqMjZ1MFI2UmxpOVVJWlNjUGhoWTB3Iiwidi1rMzl2VGI5NFI5a25VWTZtbzlXUVdEQkNJS3lya0J4bExTQVl3T2MyNCJdfSwiaXNzdWluZ19jb3VudHJ5IjoiREUiLCJ2Y3QiOiJodHRwczovL2V4YW1wbGUuYm1pLmJ1bmQuZGUvY3JlZGVudGlhbC9waWQvMS4wIiwiaXNzdWluZ19hdXRob3JpdHkiOiJERSIsIl9zZF9hbGciOiJzaGEtMjU2IiwiaXNzIjoiaHR0cHM6Ly9kZW1vLnBpZC1pc3N1ZXIuYnVuZGVzZHJ1Y2tlcmVpLmRlL2MxIiwiY25mIjp7Imp3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IkhzS194Tl95SVU4eWlqdW9BWlhsbndFRU00ZlhZenVNRmd5TTE5SmRYMUkiLCJ5IjoiQUR2NnplVDl3YmgxU0ZxMG14TkcxMUZueC05eFdSRFcwR18xN1dSRXpRSSJ9fSwiZXhwIjoxNzMzNTcxMzI3LCJpYXQiOjE3MzIzNjE3MjcsImFnZV9lcXVhbF9vcl9vdmVyIjp7Il9zZCI6WyJLRDF0U0hnYWotZi1qbkZURkRDMW1sZ0RwNzhMZE1KcHlqWnRRU0k4a1ZnIiwiTDRjTTMtZU1mRHg0Znc2UEw3OVRTVFBnM042VXdzOGNPc3JOYmNqaEEtYyIsImRYUFBQX2lmNFM3XzBzcXZXNTBwZEdlMWszbS1wMnM3M1JicDlncThGaDAiLCJtYnllcU05YUkzRkVvWmFoODA5eTN0dlRCV1NvZTBMSlRUYTlONGNjdmlZIiwicm1zd0dEZnhvS0ZFYlFsNzZ4S1ZVT0hrX0MyQlVpVnQ5RDlvMTFrMmZNSSIsInZsY2Y4WTNhQnNTeEZBeVZfYk9NTndvX3FTT1pHc3ViSVZiY0FVSWVBSGMiXX19.gruqjNOuJBgHXEnG9e60wOoqiyEaL1K9pdL215a0ffZCjtIZ_kICDrO5vBiTrEmvjjd6w_N_thEYLhzob77Epg~WyJWRXlWQWF0LXoyNU8tbkQ0MVBaOGdnIiwiZmFtaWx5X25hbWUiLCJNVVNURVJNQU5OIl0~WyJLcnRPei1lRk9hMU9JYmpmUHUxcHRBIiwiZ2l2ZW5fbmFtZSIsIkVSSUtBIl0~WyJQQUVjSHp0NWk5bFFzNUZlRmFGUS1RIiwiYmlydGhkYXRlIiwiMTk2NC0wOC0xMiJd~';
+
 const pex = new PEX({
   hasher,
 });
+
+function getPresentationDefinitionV2PidAndMdl(): PresentationDefinitionV2 {
+  return {
+    id: '1ad8ea6e-ec51-4e14-b316-dd76a6275480',
+    name: 'PID and MDL - Rent a Car (vc+sd-jwt)',
+    purpose: 'To secure your car reservations and finalize the transaction, we require the following attributes',
+    input_descriptors: [
+      {
+        id: 'bf8669f4-0cf3-4d16-b72b-b47eb702a7cd',
+        format: {
+          'vc+sd-jwt': {
+            'sd-jwt_alg_values': ['ES256'],
+            'kb-jwt_alg_values': ['ES256'],
+          },
+        },
+        group: ['A'],
+        constraints: {
+          limit_disclosure: 'required',
+          fields: [
+            { path: ['$.document_number'] },
+            { path: ['$.portrait'] },
+            { path: ['$.issue_date'] },
+            { path: ['$.expiry_date'] },
+            { path: ['$.issuing_country'] },
+            { path: ['$.issuing_authority'] },
+            { path: ['$.driving_priviliges'] },
+            {
+              path: ['$.vct'],
+              filter: {
+                type: 'string',
+                enum: ['https://example.eudi.ec.europa.eu/mdl/1'],
+              },
+            },
+          ],
+        },
+      },
+      {
+        id: '99fce09b-a0d3-415b-b8a7-3eab8829babc',
+        format: {
+          'vc+sd-jwt': {
+            'sd-jwt_alg_values': ['ES256'],
+            'kb-jwt_alg_values': ['ES256'],
+          },
+        },
+        group: ['B'],
+        constraints: {
+          limit_disclosure: 'required',
+          fields: [
+            { path: ['$.given_name'] },
+            { path: ['$.family_name'] },
+            { path: ['$.birthdate'] },
+            {
+              path: ['$.vct'],
+              filter: {
+                type: 'string',
+                enum: ['https://example.bmi.bund.de/credential/pid/1.0', 'urn:eu.europa.ec.eudi:pid:1'],
+              },
+            },
+            {
+              path: ['$.iss'],
+              filter: {
+                type: 'string',
+                enum: [
+                  'https://demo.pid-issuer.bundesdruckerei.de/c',
+                  'https://demo.pid-issuer.bundesdruckerei.de/c1',
+                  'https://demo.pid-issuer.bundesdruckerei.de/b1',
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
+  };
+}
 
 function getPresentationDefinitionV2(): PresentationDefinitionV2 {
   return {
@@ -282,7 +360,7 @@ describe('evaluate', () => {
     expect(result.matches).toEqual([
       {
         name: 'Washington State Business License',
-        rule: 'all',
+        areRequiredCredentialsPresent: Status.INFO,
         vc_path: ['$.verifiableCredential[0]'],
         type: SubmissionRequirementMatchType.InputDescriptor,
         id: 'wa_driver_license',
@@ -300,7 +378,7 @@ describe('evaluate', () => {
     expect(result.matches).toEqual([
       {
         name: 'Washington State Business License',
-        rule: 'all',
+        areRequiredCredentialsPresent: Status.INFO,
         vc_path: ['$.verifiableCredential[0]'],
         type: SubmissionRequirementMatchType.InputDescriptor,
         id: 'wa_driver_license',
@@ -407,6 +485,450 @@ describe('evaluate', () => {
       warnings: [],
       errors: [],
       value: presentationResult.presentationSubmission,
+    });
+  });
+
+  it('select where only one of requested credentials is present', async () => {
+    const presentationDefinition = getPresentationDefinitionV2PidAndMdl();
+    const selectResults = pex.selectFrom(presentationDefinition, [pidSdJwt]);
+
+    expect(selectResults).toEqual({
+      errors: [
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate failed filter evaluation: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'MarkForSubmissionEvaluation',
+          status: 'error',
+          message: 'The input candidate is not eligible for submission: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+      ],
+      matches: [
+        {
+          areRequiredCredentialsPresent: 'error',
+          id: 'bf8669f4-0cf3-4d16-b72b-b47eb702a7cd',
+          type: SubmissionRequirementMatchType.InputDescriptor,
+          vc_path: [],
+        },
+        {
+          areRequiredCredentialsPresent: Status.INFO,
+          id: '99fce09b-a0d3-415b-b8a7-3eab8829babc',
+          type: SubmissionRequirementMatchType.InputDescriptor,
+          vc_path: ['$.verifiableCredential[0]'],
+        },
+      ],
+      areRequiredCredentialsPresent: 'error',
+      verifiableCredential: [
+        'eyJ4NWMiOlsiTUlJQ2REQ0NBaHVnQXdJQkFnSUJBakFLQmdncWhrak9QUVFEQWpDQmlERUxNQWtHQTFVRUJoTUNSRVV4RHpBTkJnTlZCQWNNQmtKbGNteHBiakVkTUJzR0ExVUVDZ3dVUW5WdVpHVnpaSEoxWTJ0bGNtVnBJRWR0WWtneEVUQVBCZ05WQkFzTUNGUWdRMU1nU1VSRk1UWXdOQVlEVlFRRERDMVRVRkpKVGtRZ1JuVnVhMlVnUlZWRVNTQlhZV3hzWlhRZ1VISnZkRzkwZVhCbElFbHpjM1ZwYm1jZ1EwRXdIaGNOTWpRd05UTXhNRGd4TXpFM1doY05NalV3TnpBMU1EZ3hNekUzV2pCc01Rc3dDUVlEVlFRR0V3SkVSVEVkTUJzR0ExVUVDZ3dVUW5WdVpHVnpaSEoxWTJ0bGNtVnBJRWR0WWtneENqQUlCZ05WQkFzTUFVa3hNakF3QmdOVkJBTU1LVk5RVWtsT1JDQkdkVzVyWlNCRlZVUkpJRmRoYkd4bGRDQlFjbTkwYjNSNWNHVWdTWE56ZFdWeU1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRU9GQnE0WU1LZzR3NWZUaWZzeXR3QnVKZi83RTdWaFJQWGlObTUyUzNxMUVUSWdCZFh5REsza1Z4R3hnZUhQaXZMUDN1dU12UzZpREVjN3FNeG12ZHVLT0JrRENCalRBZEJnTlZIUTRFRmdRVWlQaENrTEVyRFhQTFcyL0owV1ZlZ2h5dyttSXdEQVlEVlIwVEFRSC9CQUl3QURBT0JnTlZIUThCQWY4RUJBTUNCNEF3TFFZRFZSMFJCQ1l3SklJaVpHVnRieTV3YVdRdGFYTnpkV1Z5TG1KMWJtUmxjMlJ5ZFdOclpYSmxhUzVrWlRBZkJnTlZIU01FR0RBV2dCVFVWaGpBaVRqb0RsaUVHTWwyWXIrcnU4V1F2akFLQmdncWhrak9QUVFEQWdOSEFEQkVBaUFiZjVUemtjUXpoZldvSW95aTFWTjdkOEk5QnNGS20xTVdsdVJwaDJieUdRSWdLWWtkck5mMnhYUGpWU2JqVy9VLzVTNXZBRUM1WHhjT2FudXNPQnJvQmJVPSIsIk1JSUNlVENDQWlDZ0F3SUJBZ0lVQjVFOVFWWnRtVVljRHRDaktCL0gzVlF2NzJnd0NnWUlLb1pJemowRUF3SXdnWWd4Q3pBSkJnTlZCQVlUQWtSRk1ROHdEUVlEVlFRSERBWkNaWEpzYVc0eEhUQWJCZ05WQkFvTUZFSjFibVJsYzJSeWRXTnJaWEpsYVNCSGJXSklNUkV3RHdZRFZRUUxEQWhVSUVOVElFbEVSVEUyTURRR0ExVUVBd3d0VTFCU1NVNUVJRVoxYm10bElFVlZSRWtnVjJGc2JHVjBJRkJ5YjNSdmRIbHdaU0JKYzNOMWFXNW5JRU5CTUI0WERUSTBNRFV6TVRBMk5EZ3dPVm9YRFRNME1EVXlPVEEyTkRnd09Wb3dnWWd4Q3pBSkJnTlZCQVlUQWtSRk1ROHdEUVlEVlFRSERBWkNaWEpzYVc0eEhUQWJCZ05WQkFvTUZFSjFibVJsYzJSeWRXTnJaWEpsYVNCSGJXSklNUkV3RHdZRFZRUUxEQWhVSUVOVElFbEVSVEUyTURRR0ExVUVBd3d0VTFCU1NVNUVJRVoxYm10bElFVlZSRWtnVjJGc2JHVjBJRkJ5YjNSdmRIbHdaU0JKYzNOMWFXNW5JRU5CTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWUd6ZHdGRG5jNytLbjVpYkF2Q09NOGtlNzdWUXhxZk1jd1pMOElhSUErV0NST2NDZm1ZL2dpSDkycU1ydTVwL2t5T2l2RTBSQy9JYmRNT052RG9VeWFObU1HUXdIUVlEVlIwT0JCWUVGTlJXR01DSk9PZ09XSVFZeVhaaXY2dTd4WkMrTUI4R0ExVWRJd1FZTUJhQUZOUldHTUNKT09nT1dJUVl5WFppdjZ1N3haQytNQklHQTFVZEV3RUIvd1FJTUFZQkFmOENBUUF3RGdZRFZSMFBBUUgvQkFRREFnR0dNQW9HQ0NxR1NNNDlCQU1DQTBjQU1FUUNJR0VtN3drWktIdC9hdGI0TWRGblhXNnlybndNVVQydTEzNmdkdGwxMFk2aEFpQnVURnF2Vll0aDFyYnh6Q1AweFdaSG1RSzlrVnl4bjhHUGZYMjdFSXp6c3c9PSJdLCJraWQiOiJNSUdVTUlHT3BJR0xNSUdJTVFzd0NRWURWUVFHRXdKRVJURVBNQTBHQTFVRUJ3d0dRbVZ5YkdsdU1SMHdHd1lEVlFRS0RCUkNkVzVrWlhOa2NuVmphMlZ5WldrZ1IyMWlTREVSTUE4R0ExVUVDd3dJVkNCRFV5QkpSRVV4TmpBMEJnTlZCQU1NTFZOUVVrbE9SQ0JHZFc1clpTQkZWVVJKSUZkaGJHeGxkQ0JRY205MGIzUjVjR1VnU1hOemRXbHVaeUJEUVFJQkFnPT0iLCJ0eXAiOiJ2YytzZC1qd3QiLCJhbGciOiJFUzI1NiJ9.eyJwbGFjZV9vZl9iaXJ0aCI6eyJfc2QiOlsiVS01ZlVXLU5EM1laajZTcUdyQXV4NXJWYWZOalhqZ2hvMmRUUmpQX3hOTSJdfSwiX3NkIjpbIjlFaUpQNEw2NDI0bEtTVGs5NHpIOWhaWVc5UjNuS1R3V0V5TVBJN2dvWHciLCJHVlhRWEtFMmpWR1d0VEF6T1d5ck85TTZySW1qYkZJWGFnRkMyWElMbGhJIiwiUUV2bHpNd0ozZS1tOEtpWEk5bGx2bnVQblh5UHRXN2VCSF9GcXFVTnk3WSIsImljWkpTRkFqLVg3T29Sam5vRFRReXFwU1dNQUVuaTcydWZDZmFFWC1uQkUiLCJsUHJqb3BqbEN5bFdHWVo0cmh4S1RUTUsxS3p1Sm5ISUtybzNwUUhlUXF3IiwicjJORHZtRFY3QmU3TlptVFR0VE9fekdZX3RTdWdYVXoxeDJBXzZuOFhvdyIsInJPbjFJUkpUQWtEV1pSTGc3MUYzaDVsbFpPc1ZPMl9aemlOUy1majNEUFUiXSwiYWRkcmVzcyI6eyJfc2QiOlsiQnI1aVZtZnZlaTloQ01mMktVOGRFVjFER2hrdUtsQ1pUeGFEQ0FMb3NJbyIsIkx6czJpR09SNHF0clhhYmdwMzFfcjFFUFNmazlaUDJQRElJUTRQaHlPT00iLCJadUV5cG41Y0s0WVpWdHdkeGFoWXJqMjZ1MFI2UmxpOVVJWlNjUGhoWTB3Iiwidi1rMzl2VGI5NFI5a25VWTZtbzlXUVdEQkNJS3lya0J4bExTQVl3T2MyNCJdfSwiaXNzdWluZ19jb3VudHJ5IjoiREUiLCJ2Y3QiOiJodHRwczovL2V4YW1wbGUuYm1pLmJ1bmQuZGUvY3JlZGVudGlhbC9waWQvMS4wIiwiaXNzdWluZ19hdXRob3JpdHkiOiJERSIsIl9zZF9hbGciOiJzaGEtMjU2IiwiaXNzIjoiaHR0cHM6Ly9kZW1vLnBpZC1pc3N1ZXIuYnVuZGVzZHJ1Y2tlcmVpLmRlL2MxIiwiY25mIjp7Imp3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IkhzS194Tl95SVU4eWlqdW9BWlhsbndFRU00ZlhZenVNRmd5TTE5SmRYMUkiLCJ5IjoiQUR2NnplVDl3YmgxU0ZxMG14TkcxMUZueC05eFdSRFcwR18xN1dSRXpRSSJ9fSwiZXhwIjoxNzMzNTcxMzI3LCJpYXQiOjE3MzIzNjE3MjcsImFnZV9lcXVhbF9vcl9vdmVyIjp7Il9zZCI6WyJLRDF0U0hnYWotZi1qbkZURkRDMW1sZ0RwNzhMZE1KcHlqWnRRU0k4a1ZnIiwiTDRjTTMtZU1mRHg0Znc2UEw3OVRTVFBnM042VXdzOGNPc3JOYmNqaEEtYyIsImRYUFBQX2lmNFM3XzBzcXZXNTBwZEdlMWszbS1wMnM3M1JicDlncThGaDAiLCJtYnllcU05YUkzRkVvWmFoODA5eTN0dlRCV1NvZTBMSlRUYTlONGNjdmlZIiwicm1zd0dEZnhvS0ZFYlFsNzZ4S1ZVT0hrX0MyQlVpVnQ5RDlvMTFrMmZNSSIsInZsY2Y4WTNhQnNTeEZBeVZfYk9NTndvX3FTT1pHc3ViSVZiY0FVSWVBSGMiXX19.gruqjNOuJBgHXEnG9e60wOoqiyEaL1K9pdL215a0ffZCjtIZ_kICDrO5vBiTrEmvjjd6w_N_thEYLhzob77Epg~WyJWRXlWQWF0LXoyNU8tbkQ0MVBaOGdnIiwiZmFtaWx5X25hbWUiLCJNVVNURVJNQU5OIl0~WyJLcnRPei1lRk9hMU9JYmpmUHUxcHRBIiwiZ2l2ZW5fbmFtZSIsIkVSSUtBIl0~WyJQQUVjSHp0NWk5bFFzNUZlRmFGUS1RIiwiYmlydGhkYXRlIiwiMTk2NC0wOC0xMiJd~',
+      ],
+      warnings: [],
+      vcIndexes: [0],
+    });
+  });
+
+  it('select where only one of requested credentials is present with submission requirements', async () => {
+    const presentationDefinition = getPresentationDefinitionV2PidAndMdl();
+    presentationDefinition.submission_requirements = [
+      {
+        rule: 'all',
+        from: 'A',
+      },
+      {
+        rule: 'pick',
+        count: 1,
+        from: 'B',
+      },
+    ];
+    const selectResults = pex.selectFrom(presentationDefinition, [pidSdJwt]);
+    expect(selectResults).toEqual({
+      errors: [
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate failed filter evaluation: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'MarkForSubmissionEvaluation',
+          status: 'error',
+          message: 'The input candidate is not eligible for submission: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+      ],
+      matches: [
+        {
+          id: 0,
+          type: SubmissionRequirementMatchType.SubmissionRequirement,
+          from: 'A',
+          areRequiredCredentialsPresent: 'error',
+          rule: {
+            type: 'all',
+            count: 1,
+          },
+          input_descriptors: [
+            {
+              id: 'bf8669f4-0cf3-4d16-b72b-b47eb702a7cd',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: [],
+              areRequiredCredentialsPresent: 'error',
+            },
+          ],
+        },
+        {
+          id: 1,
+          type: SubmissionRequirementMatchType.SubmissionRequirement,
+          from: 'B',
+          areRequiredCredentialsPresent: Status.INFO,
+          rule: {
+            type: 'pick',
+            count: 1,
+          },
+          input_descriptors: [
+            {
+              id: '99fce09b-a0d3-415b-b8a7-3eab8829babc',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[0]'],
+              areRequiredCredentialsPresent: Status.INFO,
+            },
+          ],
+        },
+      ],
+      areRequiredCredentialsPresent: 'error',
+      verifiableCredential: [pidSdJwt],
+      warnings: [],
+      vcIndexes: [0],
+    });
+  });
+
+  it('select where only one of requested credentials is present with nested submission requirements', async () => {
+    const presentationDefinition = getPresentationDefinitionV2PidAndMdl();
+    presentationDefinition.submission_requirements = [
+      {
+        rule: 'pick',
+        count: 2,
+        from_nested: [
+          {
+            from: 'A',
+            rule: 'all',
+          },
+          {
+            rule: 'all',
+            from: 'B',
+          },
+        ],
+      },
+      {
+        rule: 'pick',
+        count: 1,
+        from_nested: [
+          {
+            from: 'A',
+            rule: 'all',
+          },
+          {
+            rule: 'all',
+            from: 'B',
+          },
+        ],
+      },
+      {
+        rule: 'all',
+        from_nested: [
+          {
+            from: 'A',
+            rule: 'pick',
+            count: 1,
+          },
+          {
+            rule: 'pick',
+            from: 'B',
+            count: 1,
+          },
+        ],
+      },
+      {
+        rule: 'all',
+        from: 'B',
+      },
+      {
+        rule: 'all',
+        from: 'A',
+      },
+    ];
+    const selectResults = pex.selectFrom(presentationDefinition, [pidSdJwt]);
+    expect(selectResults).toEqual({
+      errors: [
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate does not contain property: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'FilterEvaluation',
+          status: 'error',
+          message: 'Input candidate failed filter evaluation: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+        {
+          tag: 'MarkForSubmissionEvaluation',
+          status: 'error',
+          message: 'The input candidate is not eligible for submission: $.input_descriptors[0]: $.verifiableCredential[0]',
+        },
+      ],
+      matches: [
+        {
+          id: 0,
+          areRequiredCredentialsPresent: 'error',
+          type: SubmissionRequirementMatchType.SubmissionRequirement,
+          from_nested: [
+            {
+              id: 0,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'A',
+              areRequiredCredentialsPresent: 'error',
+              rule: {
+                type: 'all',
+                count: 1,
+              },
+              input_descriptors: [
+                {
+                  id: 'bf8669f4-0cf3-4d16-b72b-b47eb702a7cd',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: [],
+                  areRequiredCredentialsPresent: 'error',
+                },
+              ],
+            },
+            {
+              id: 1,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'B',
+              areRequiredCredentialsPresent: Status.INFO,
+              rule: {
+                type: 'all',
+                count: 1,
+              },
+              input_descriptors: [
+                {
+                  id: '99fce09b-a0d3-415b-b8a7-3eab8829babc',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[0]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+              ],
+            },
+          ],
+          rule: {
+            type: 'pick',
+            count: 2,
+          },
+        },
+        {
+          id: 1,
+          areRequiredCredentialsPresent: Status.INFO,
+          type: SubmissionRequirementMatchType.SubmissionRequirement,
+          from_nested: [
+            {
+              id: 0,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'A',
+              areRequiredCredentialsPresent: 'error',
+              rule: {
+                type: 'all',
+                count: 1,
+              },
+              input_descriptors: [
+                {
+                  id: 'bf8669f4-0cf3-4d16-b72b-b47eb702a7cd',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: [],
+                  areRequiredCredentialsPresent: 'error',
+                },
+              ],
+            },
+            {
+              id: 1,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'B',
+              areRequiredCredentialsPresent: Status.INFO,
+              rule: {
+                type: 'all',
+                count: 1,
+              },
+              input_descriptors: [
+                {
+                  id: '99fce09b-a0d3-415b-b8a7-3eab8829babc',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[0]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+              ],
+            },
+          ],
+          rule: {
+            type: 'pick',
+            count: 1,
+          },
+        },
+        {
+          id: 2,
+          areRequiredCredentialsPresent: 'error',
+          type: SubmissionRequirementMatchType.SubmissionRequirement,
+          from_nested: [
+            {
+              id: 0,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'A',
+              areRequiredCredentialsPresent: 'error',
+              rule: {
+                type: 'pick',
+                count: 1,
+              },
+              input_descriptors: [
+                {
+                  id: 'bf8669f4-0cf3-4d16-b72b-b47eb702a7cd',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: [],
+                  areRequiredCredentialsPresent: 'error',
+                },
+              ],
+            },
+            {
+              id: 1,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'B',
+              areRequiredCredentialsPresent: Status.INFO,
+              rule: {
+                type: 'pick',
+                count: 1,
+              },
+              input_descriptors: [
+                {
+                  id: '99fce09b-a0d3-415b-b8a7-3eab8829babc',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[0]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+              ],
+            },
+          ],
+          rule: {
+            type: 'all',
+            count: 2,
+          },
+        },
+        {
+          id: 3,
+          type: SubmissionRequirementMatchType.SubmissionRequirement,
+          from: 'B',
+          areRequiredCredentialsPresent: Status.INFO,
+          rule: {
+            type: 'all',
+            count: 1,
+          },
+          input_descriptors: [
+            {
+              id: '99fce09b-a0d3-415b-b8a7-3eab8829babc',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[0]'],
+              areRequiredCredentialsPresent: Status.INFO,
+            },
+          ],
+        },
+        {
+          id: 4,
+          type: SubmissionRequirementMatchType.SubmissionRequirement,
+          from: 'A',
+          areRequiredCredentialsPresent: 'error',
+          rule: {
+            type: 'all',
+            count: 1,
+          },
+          input_descriptors: [
+            {
+              id: 'bf8669f4-0cf3-4d16-b72b-b47eb702a7cd',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: [],
+              areRequiredCredentialsPresent: 'error',
+            },
+          ],
+        },
+      ],
+      areRequiredCredentialsPresent: 'error',
+      verifiableCredential: [
+        'eyJ4NWMiOlsiTUlJQ2REQ0NBaHVnQXdJQkFnSUJBakFLQmdncWhrak9QUVFEQWpDQmlERUxNQWtHQTFVRUJoTUNSRVV4RHpBTkJnTlZCQWNNQmtKbGNteHBiakVkTUJzR0ExVUVDZ3dVUW5WdVpHVnpaSEoxWTJ0bGNtVnBJRWR0WWtneEVUQVBCZ05WQkFzTUNGUWdRMU1nU1VSRk1UWXdOQVlEVlFRRERDMVRVRkpKVGtRZ1JuVnVhMlVnUlZWRVNTQlhZV3hzWlhRZ1VISnZkRzkwZVhCbElFbHpjM1ZwYm1jZ1EwRXdIaGNOTWpRd05UTXhNRGd4TXpFM1doY05NalV3TnpBMU1EZ3hNekUzV2pCc01Rc3dDUVlEVlFRR0V3SkVSVEVkTUJzR0ExVUVDZ3dVUW5WdVpHVnpaSEoxWTJ0bGNtVnBJRWR0WWtneENqQUlCZ05WQkFzTUFVa3hNakF3QmdOVkJBTU1LVk5RVWtsT1JDQkdkVzVyWlNCRlZVUkpJRmRoYkd4bGRDQlFjbTkwYjNSNWNHVWdTWE56ZFdWeU1Ga3dFd1lIS29aSXpqMENBUVlJS29aSXpqMERBUWNEUWdBRU9GQnE0WU1LZzR3NWZUaWZzeXR3QnVKZi83RTdWaFJQWGlObTUyUzNxMUVUSWdCZFh5REsza1Z4R3hnZUhQaXZMUDN1dU12UzZpREVjN3FNeG12ZHVLT0JrRENCalRBZEJnTlZIUTRFRmdRVWlQaENrTEVyRFhQTFcyL0owV1ZlZ2h5dyttSXdEQVlEVlIwVEFRSC9CQUl3QURBT0JnTlZIUThCQWY4RUJBTUNCNEF3TFFZRFZSMFJCQ1l3SklJaVpHVnRieTV3YVdRdGFYTnpkV1Z5TG1KMWJtUmxjMlJ5ZFdOclpYSmxhUzVrWlRBZkJnTlZIU01FR0RBV2dCVFVWaGpBaVRqb0RsaUVHTWwyWXIrcnU4V1F2akFLQmdncWhrak9QUVFEQWdOSEFEQkVBaUFiZjVUemtjUXpoZldvSW95aTFWTjdkOEk5QnNGS20xTVdsdVJwaDJieUdRSWdLWWtkck5mMnhYUGpWU2JqVy9VLzVTNXZBRUM1WHhjT2FudXNPQnJvQmJVPSIsIk1JSUNlVENDQWlDZ0F3SUJBZ0lVQjVFOVFWWnRtVVljRHRDaktCL0gzVlF2NzJnd0NnWUlLb1pJemowRUF3SXdnWWd4Q3pBSkJnTlZCQVlUQWtSRk1ROHdEUVlEVlFRSERBWkNaWEpzYVc0eEhUQWJCZ05WQkFvTUZFSjFibVJsYzJSeWRXTnJaWEpsYVNCSGJXSklNUkV3RHdZRFZRUUxEQWhVSUVOVElFbEVSVEUyTURRR0ExVUVBd3d0VTFCU1NVNUVJRVoxYm10bElFVlZSRWtnVjJGc2JHVjBJRkJ5YjNSdmRIbHdaU0JKYzNOMWFXNW5JRU5CTUI0WERUSTBNRFV6TVRBMk5EZ3dPVm9YRFRNME1EVXlPVEEyTkRnd09Wb3dnWWd4Q3pBSkJnTlZCQVlUQWtSRk1ROHdEUVlEVlFRSERBWkNaWEpzYVc0eEhUQWJCZ05WQkFvTUZFSjFibVJsYzJSeWRXTnJaWEpsYVNCSGJXSklNUkV3RHdZRFZRUUxEQWhVSUVOVElFbEVSVEUyTURRR0ExVUVBd3d0VTFCU1NVNUVJRVoxYm10bElFVlZSRWtnVjJGc2JHVjBJRkJ5YjNSdmRIbHdaU0JKYzNOMWFXNW5JRU5CTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWUd6ZHdGRG5jNytLbjVpYkF2Q09NOGtlNzdWUXhxZk1jd1pMOElhSUErV0NST2NDZm1ZL2dpSDkycU1ydTVwL2t5T2l2RTBSQy9JYmRNT052RG9VeWFObU1HUXdIUVlEVlIwT0JCWUVGTlJXR01DSk9PZ09XSVFZeVhaaXY2dTd4WkMrTUI4R0ExVWRJd1FZTUJhQUZOUldHTUNKT09nT1dJUVl5WFppdjZ1N3haQytNQklHQTFVZEV3RUIvd1FJTUFZQkFmOENBUUF3RGdZRFZSMFBBUUgvQkFRREFnR0dNQW9HQ0NxR1NNNDlCQU1DQTBjQU1FUUNJR0VtN3drWktIdC9hdGI0TWRGblhXNnlybndNVVQydTEzNmdkdGwxMFk2aEFpQnVURnF2Vll0aDFyYnh6Q1AweFdaSG1RSzlrVnl4bjhHUGZYMjdFSXp6c3c9PSJdLCJraWQiOiJNSUdVTUlHT3BJR0xNSUdJTVFzd0NRWURWUVFHRXdKRVJURVBNQTBHQTFVRUJ3d0dRbVZ5YkdsdU1SMHdHd1lEVlFRS0RCUkNkVzVrWlhOa2NuVmphMlZ5WldrZ1IyMWlTREVSTUE4R0ExVUVDd3dJVkNCRFV5QkpSRVV4TmpBMEJnTlZCQU1NTFZOUVVrbE9SQ0JHZFc1clpTQkZWVVJKSUZkaGJHeGxkQ0JRY205MGIzUjVjR1VnU1hOemRXbHVaeUJEUVFJQkFnPT0iLCJ0eXAiOiJ2YytzZC1qd3QiLCJhbGciOiJFUzI1NiJ9.eyJwbGFjZV9vZl9iaXJ0aCI6eyJfc2QiOlsiVS01ZlVXLU5EM1laajZTcUdyQXV4NXJWYWZOalhqZ2hvMmRUUmpQX3hOTSJdfSwiX3NkIjpbIjlFaUpQNEw2NDI0bEtTVGs5NHpIOWhaWVc5UjNuS1R3V0V5TVBJN2dvWHciLCJHVlhRWEtFMmpWR1d0VEF6T1d5ck85TTZySW1qYkZJWGFnRkMyWElMbGhJIiwiUUV2bHpNd0ozZS1tOEtpWEk5bGx2bnVQblh5UHRXN2VCSF9GcXFVTnk3WSIsImljWkpTRkFqLVg3T29Sam5vRFRReXFwU1dNQUVuaTcydWZDZmFFWC1uQkUiLCJsUHJqb3BqbEN5bFdHWVo0cmh4S1RUTUsxS3p1Sm5ISUtybzNwUUhlUXF3IiwicjJORHZtRFY3QmU3TlptVFR0VE9fekdZX3RTdWdYVXoxeDJBXzZuOFhvdyIsInJPbjFJUkpUQWtEV1pSTGc3MUYzaDVsbFpPc1ZPMl9aemlOUy1majNEUFUiXSwiYWRkcmVzcyI6eyJfc2QiOlsiQnI1aVZtZnZlaTloQ01mMktVOGRFVjFER2hrdUtsQ1pUeGFEQ0FMb3NJbyIsIkx6czJpR09SNHF0clhhYmdwMzFfcjFFUFNmazlaUDJQRElJUTRQaHlPT00iLCJadUV5cG41Y0s0WVpWdHdkeGFoWXJqMjZ1MFI2UmxpOVVJWlNjUGhoWTB3Iiwidi1rMzl2VGI5NFI5a25VWTZtbzlXUVdEQkNJS3lya0J4bExTQVl3T2MyNCJdfSwiaXNzdWluZ19jb3VudHJ5IjoiREUiLCJ2Y3QiOiJodHRwczovL2V4YW1wbGUuYm1pLmJ1bmQuZGUvY3JlZGVudGlhbC9waWQvMS4wIiwiaXNzdWluZ19hdXRob3JpdHkiOiJERSIsIl9zZF9hbGciOiJzaGEtMjU2IiwiaXNzIjoiaHR0cHM6Ly9kZW1vLnBpZC1pc3N1ZXIuYnVuZGVzZHJ1Y2tlcmVpLmRlL2MxIiwiY25mIjp7Imp3ayI6eyJrdHkiOiJFQyIsImNydiI6IlAtMjU2IiwieCI6IkhzS194Tl95SVU4eWlqdW9BWlhsbndFRU00ZlhZenVNRmd5TTE5SmRYMUkiLCJ5IjoiQUR2NnplVDl3YmgxU0ZxMG14TkcxMUZueC05eFdSRFcwR18xN1dSRXpRSSJ9fSwiZXhwIjoxNzMzNTcxMzI3LCJpYXQiOjE3MzIzNjE3MjcsImFnZV9lcXVhbF9vcl9vdmVyIjp7Il9zZCI6WyJLRDF0U0hnYWotZi1qbkZURkRDMW1sZ0RwNzhMZE1KcHlqWnRRU0k4a1ZnIiwiTDRjTTMtZU1mRHg0Znc2UEw3OVRTVFBnM042VXdzOGNPc3JOYmNqaEEtYyIsImRYUFBQX2lmNFM3XzBzcXZXNTBwZEdlMWszbS1wMnM3M1JicDlncThGaDAiLCJtYnllcU05YUkzRkVvWmFoODA5eTN0dlRCV1NvZTBMSlRUYTlONGNjdmlZIiwicm1zd0dEZnhvS0ZFYlFsNzZ4S1ZVT0hrX0MyQlVpVnQ5RDlvMTFrMmZNSSIsInZsY2Y4WTNhQnNTeEZBeVZfYk9NTndvX3FTT1pHc3ViSVZiY0FVSWVBSGMiXX19.gruqjNOuJBgHXEnG9e60wOoqiyEaL1K9pdL215a0ffZCjtIZ_kICDrO5vBiTrEmvjjd6w_N_thEYLhzob77Epg~WyJWRXlWQWF0LXoyNU8tbkQ0MVBaOGdnIiwiZmFtaWx5X25hbWUiLCJNVVNURVJNQU5OIl0~WyJLcnRPei1lRk9hMU9JYmpmUHUxcHRBIiwiZ2l2ZW5fbmFtZSIsIkVSSUtBIl0~WyJQQUVjSHp0NWk5bFFzNUZlRmFGUS1RIiwiYmlydGhkYXRlIiwiMTk2NC0wOC0xMiJd~',
+      ],
+      warnings: [],
+      vcIndexes: [0],
     });
   });
 

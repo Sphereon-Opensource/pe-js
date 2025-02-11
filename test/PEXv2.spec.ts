@@ -314,11 +314,11 @@ describe('evaluate', () => {
     expect(JSON.stringify(result!.matches)).toBe(
       JSON.stringify([
         {
-          name: 'Verify Valid License',
-          rule: 'all',
-          vc_path: ['$.verifiableCredential[0]'],
-          type: 'InputDescriptor',
+          areRequiredCredentialsPresent: 'info',
           id: 'drivers_license_information',
+          name: 'Verify Valid License',
+          type: 'InputDescriptor',
+          vc_path: ['$.verifiableCredential[0]'],
         },
       ]),
     );

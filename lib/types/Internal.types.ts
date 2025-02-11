@@ -22,7 +22,7 @@ export interface IInternalPresentationDefinition {
   name?: string;
   purpose?: string;
   submission_requirements?: Array<SubmissionRequirement>;
-  input_descriptors: Array<{ id: string; group?: string[] }>;
+  input_descriptors: Array<{ id: string; group?: string[]; name?: string }>;
 
   getVersion(): PEVersion;
 }

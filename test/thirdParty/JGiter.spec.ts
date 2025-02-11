@@ -1,9 +1,9 @@
-import { PresentationDefinitionV2, Rules } from '@sphereon/pex-models';
+import { PresentationDefinitionV2 } from '@sphereon/pex-models';
 import { IPresentation, IProofType, IVerifiableCredential } from '@sphereon/ssi-types';
 
 import { EvaluationResults, PEX, Status } from '../../lib';
 import { PresentationEvaluationResults } from '../../lib/evaluation';
-import { SubmissionRequirementMatchType } from '../../lib/evaluation/core';
+import { SubmissionRequirementMatchFrom, SubmissionRequirementMatchType } from '../../lib/evaluation/core';
 
 const LIMIT_DISCLOSURE_SIGNATURE_SUITES = [IProofType.BbsBlsSignatureProof2020];
 
@@ -496,13 +496,13 @@ describe('evaluate JGiter tests', () => {
     const vcs = getVerifiableCredentials();
 
     const selectFrom = pex.selectFrom(pdSchema, vcs);
-    expect(selectFrom.errors?.length).toEqual(6);
-    expect(selectFrom.areRequiredCredentialsPresent).toEqual(Status.WARN);
+    expect(selectFrom.errors?.length).toEqual(0);
+    expect(selectFrom.areRequiredCredentialsPresent).toEqual(Status.INFO);
     expect(selectFrom.verifiableCredential?.length).toEqual(2);
-    expect(selectFrom.matches![0]?.from).toEqual('A');
-    expect(selectFrom.matches![0]?.vc_path).toEqual(['$.verifiableCredential[0]']);
-    expect(selectFrom.matches![1]?.from).toEqual('B');
-    expect(selectFrom.matches![1]?.vc_path).toEqual(['$.verifiableCredential[1]']);
+    expect((selectFrom.matches![0] as SubmissionRequirementMatchFrom)?.from).toEqual('A');
+    expect((selectFrom.matches![0] as SubmissionRequirementMatchFrom)?.input_descriptors[0].vc_path).toEqual(['$.verifiableCredential[0]']);
+    expect((selectFrom.matches![1] as SubmissionRequirementMatchFrom)?.from).toEqual('B');
+    expect((selectFrom.matches![1] as SubmissionRequirementMatchFrom)?.input_descriptors[0].vc_path).toEqual(['$.verifiableCredential[1]']);
     const presentationResult = pex.presentationFrom(pdSchema, selectFrom.verifiableCredential as IVerifiableCredential[]);
     const presentation = presentationResult.presentations[0] as IPresentation;
     expect(presentation.presentation_submission?.descriptor_map).toEqual([
@@ -531,8 +531,8 @@ describe('evaluate JGiter tests', () => {
     const pdSchema: PresentationDefinitionV2 = getPresentationDefinition_2();
     const vcs = getVerifiableCredentials();
     const selectResult = pex.selectFrom(pdSchema, vcs);
-    expect(selectResult.errors?.length).toEqual(6);
-    expect(selectResult.areRequiredCredentialsPresent).toEqual(Status.WARN);
+    expect(selectResult.errors?.length).toEqual(0);
+    expect(selectResult.areRequiredCredentialsPresent).toEqual(Status.INFO);
   });
 
   it('Evaluate case with with single submission requirements (A pick min 2)', () => {
@@ -564,7 +564,7 @@ describe('evaluate JGiter tests', () => {
     const pdSchema: PresentationDefinitionV2 = getPresentationDefinition_5();
     const vcs = getVerifiableCredentials();
     const selectResult = pex.selectFrom(pdSchema, vcs);
-    expect(selectResult.areRequiredCredentialsPresent).toBe(Status.ERROR);
+    expect(selectResult.areRequiredCredentialsPresent).toBe(Status.INFO);
   });
 
   it('Evaluate case with with no submission requirements', () => {
@@ -579,21 +579,21 @@ describe('evaluate JGiter tests', () => {
     expect(resultSelectFrom.matches).toEqual([
       {
         name: 'Subject identity input',
-        rule: Rules.All,
+        areRequiredCredentialsPresent: 'info',
         vc_path: ['$.verifiableCredential[0]'],
         id: 'identity_input',
         type: SubmissionRequirementMatchType.InputDescriptor,
       },
       {
         name: 'Subject name input',
-        rule: Rules.All,
+        areRequiredCredentialsPresent: 'info',
         vc_path: ['$.verifiableCredential[0]'],
         id: 'name_input',
         type: SubmissionRequirementMatchType.InputDescriptor,
       },
       {
         name: 'Admin role input',
-        rule: Rules.All,
+        areRequiredCredentialsPresent: 'info',
         vc_path: ['$.verifiableCredential[1]'],
         id: 'role_input',
         type: SubmissionRequirementMatchType.InputDescriptor,

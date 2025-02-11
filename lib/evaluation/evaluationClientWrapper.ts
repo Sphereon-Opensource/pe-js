@@ -21,7 +21,7 @@ import {
   IPresentationDefinition,
   OrArray,
 } from '../types';
-import { JsonPathUtils, ObjectUtils } from '../utils';
+import { JsonPathUtils } from '../utils';
 import { getVpFormatForVcFormat } from '../utils/formatMap';
 
 import {
@@ -30,6 +30,9 @@ import {
   PresentationEvaluationResults,
   SelectResults,
   SubmissionRequirementMatch,
+  SubmissionRequirementMatchFrom,
+  SubmissionRequirementMatchFromNested,
+  SubmissionRequirementMatchInputDescriptor,
   SubmissionRequirementMatchType,
 } from './core';
 import { EvaluationClient } from './evaluationClient';
@@ -79,276 +82,250 @@ export class EvaluationClientWrapper {
       restrictToDIDMethods?: string[];
     },
   ): SelectResults {
-    let selectResults: SelectResults;
-
     this._client.evaluate(presentationDefinition, wrappedVerifiableCredentials, opts);
+
     const warnings: Checked[] = [...this.formatNotInfo(Status.WARN)];
     const errors: Checked[] = [...this.formatNotInfo(Status.ERROR)];
+    const marked = this._client.results.filter((result) => result.evaluator === 'MarkForSubmissionEvaluation' && result.status !== Status.ERROR);
 
-    if (presentationDefinition.submission_requirements) {
-      const info: HandlerCheckResult[] = this._client.results.filter(
-        (result) => result.evaluator === 'MarkForSubmissionEvaluation' && result.payload.group && result.status !== Status.ERROR,
-      );
-      const marked = Array.from(new Set(info));
-      let matchSubmissionRequirements;
-      try {
-        matchSubmissionRequirements = this.matchSubmissionRequirements(
-          presentationDefinition,
-          presentationDefinition.submission_requirements,
-          marked,
-        );
-      } catch (e) {
-        const matchingError: Checked = {
-          status: Status.ERROR,
-          message: JSON.stringify(e),
-          tag: 'matchSubmissionRequirements',
-        };
-        return {
-          errors: errors ? [...errors, matchingError] : [matchingError],
-          warnings: warnings,
-          areRequiredCredentialsPresent: Status.ERROR,
-        };
-      }
-
-      const matches = this.extractMatches(matchSubmissionRequirements);
-      const credentials: IVerifiableCredential[] = matches.map(
-        (e) =>
-          jp.nodes(
-            this._client.wrappedVcs.map((wrapped) => wrapped.original),
-            e,
-          )[0].value,
-      );
-      const areRequiredCredentialsPresent = this.determineAreRequiredCredentialsPresent(presentationDefinition, matchSubmissionRequirements);
-      selectResults = {
-        errors: areRequiredCredentialsPresent === Status.INFO ? [] : errors,
-        matches: [...matchSubmissionRequirements],
-        areRequiredCredentialsPresent,
-        verifiableCredential: credentials,
-        warnings,
+    let matchSubmissionRequirements: SubmissionRequirementMatch[];
+    try {
+      matchSubmissionRequirements = this.matchPresentationDefinition(marked, presentationDefinition);
+    } catch (e) {
+      const matchingError: Checked = {
+        status: Status.ERROR,
+        message: JSON.stringify(e),
+        tag: 'matchSubmissionRequirements',
       };
-    } else {
-      const marked: HandlerCheckResult[] = this._client.results.filter(
-        (result) => result.evaluator === 'MarkForSubmissionEvaluation' && result.status !== Status.ERROR,
-      );
-      const checkWithoutSRResults: HandlerCheckResult[] = this.checkWithoutSubmissionRequirements(marked, presentationDefinition);
-      if (!checkWithoutSRResults.length) {
-        const matchSubmissionRequirements = this.matchWithoutSubmissionRequirements(marked, presentationDefinition);
-        const matches = this.extractMatches(matchSubmissionRequirements);
-        const credentials: IVerifiableCredential[] = matches.map(
-          (e) =>
-            jp.nodes(
-              this._client.wrappedVcs.map((wrapped) => wrapped.original),
-              e,
-            )[0].value,
-        );
-        selectResults = {
-          errors: [],
-          matches: [...matchSubmissionRequirements],
-          areRequiredCredentialsPresent: Status.INFO,
-          verifiableCredential: credentials,
-          warnings,
-        };
-      } else {
-        return {
-          errors: errors,
-          matches: [],
-          areRequiredCredentialsPresent: Status.ERROR,
-          verifiableCredential: wrappedVerifiableCredentials.map((value) => value.original),
-          warnings: warnings,
-        };
-      }
+      return {
+        errors: errors ? [...errors, matchingError] : [matchingError],
+        warnings: warnings,
+        areRequiredCredentialsPresent: Status.ERROR,
+      };
     }
 
-    this.fillSelectableCredentialsToVerifiableCredentialsMapping(selectResults, wrappedVerifiableCredentials);
-    selectResults.areRequiredCredentialsPresent = this.determineAreRequiredCredentialsPresent(presentationDefinition, selectResults?.matches);
-    this.remapMatches(
-      wrappedVerifiableCredentials.map((wrapped) => wrapped.original as IVerifiableCredential),
-      selectResults.matches,
-      selectResults?.verifiableCredential,
-    );
-    selectResults.matches?.forEach((m) => {
-      this.updateSubmissionRequirementMatchPathToAlias(m, 'verifiableCredential');
+    const allVcPaths = this.extractVcPathsFromMatches(matchSubmissionRequirements);
+    const credentials: Array<{ credential: IVerifiableCredential; originalIndex: number }> = allVcPaths.map((vcPath) => {
+      const credential = jp.nodes(
+        this._client.wrappedVcs.map((wrapped) => wrapped.original),
+        vcPath,
+      )[0].value;
+
+      const originalIndex = this._client.wrappedVcs.findIndex((wrapped) => wrapped.original === credential);
+      if (originalIndex === -1) {
+        throw new Error('Unable to find original index for credential');
+      }
+
+      return {
+        credential,
+        originalIndex,
+      };
     });
-    if (selectResults.areRequiredCredentialsPresent === Status.INFO) {
-      selectResults.errors = [];
-    } else {
-      selectResults.errors = errors;
-      selectResults.warnings = warnings;
-      selectResults.verifiableCredential = wrappedVerifiableCredentials.map((value) => value.original);
-    }
+    const areRequiredCredentialsPresent = this.determineAreRequiredCredentialsPresent(matchSubmissionRequirements);
+    const vcIndexes = credentials.map((c) => c.originalIndex);
+
+    const selectResults: SelectResults = {
+      errors: areRequiredCredentialsPresent === Status.INFO ? [] : errors,
+      matches: matchSubmissionRequirements.map((match) =>
+        this.remapVcPathsOnMatchToSelectableCredentialIndexes(
+          match,
+          vcIndexes,
+          wrappedVerifiableCredentials.map((wrapped) => wrapped.original as IVerifiableCredential),
+        ),
+      ),
+      areRequiredCredentialsPresent,
+      verifiableCredential: credentials.map((c) => c.credential),
+      warnings,
+      vcIndexes,
+    };
+
     return selectResults;
   }
 
-  private remapMatches(
-    verifiableCredentials: OriginalVerifiableCredential[],
-    submissionRequirementMatches?: SubmissionRequirementMatch[],
-    vcsToSend?: OriginalVerifiableCredential[],
-  ) {
-    submissionRequirementMatches?.forEach((srm) => {
-      if (srm.from_nested) {
-        this.remapMatches(verifiableCredentials, srm.from_nested, vcsToSend);
-      } else {
-        srm.vc_path.forEach((match, index, matches) => {
-          const vc = jp.query(verifiableCredentials, match)[0];
-          const newIndex = vcsToSend?.findIndex((svc) => JSON.stringify(svc) === JSON.stringify(vc));
-          if (newIndex === -1) {
+  private remapVcPathsOnMatchToSelectableCredentialIndexes<Match extends SubmissionRequirementMatch>(
+    match: Match,
+    selectableIndexes: number[],
+    originalVerifiableCredentials: OriginalVerifiableCredential[],
+  ): Match {
+    if (match.type === SubmissionRequirementMatchType.InputDescriptor) {
+      return {
+        ...match,
+        vc_path: match.vc_path.map((vcPath) => {
+          const vc = jp.query(originalVerifiableCredentials, vcPath)[0];
+          const originalIndex = originalVerifiableCredentials.findIndex((original) => original === vc);
+          const selectableIndex = selectableIndexes.findIndex((index) => index === originalIndex);
+
+          if (selectableIndex === -1) {
             throw new Error(
               `The index of the VerifiableCredential in your current call can't be found in your previously submitted credentials. Are you trying to send a new Credential?\nverifiableCredential: ${vc}`,
             );
           }
-          matches[index] = `$[${newIndex}]`;
-        });
-        srm.name;
-      }
-    });
-  }
 
-  private extractMatches(matchSubmissionRequirements: SubmissionRequirementMatch[]): string[] {
-    const matches: string[] = [];
-    matchSubmissionRequirements.forEach((e) => {
-      matches.push(...e.vc_path);
-      if (e.from_nested) {
-        matches.push(...this.extractMatches(e.from_nested));
-      }
-    });
-    return Array.from(new Set(matches));
-  }
-
-  /**
-   * Since this is without SubmissionRequirements object, each InputDescriptor has to have at least one corresponding VerifiableCredential
-   * @param marked: info logs for `MarkForSubmissionEvaluation` handler
-   * @param pd
-   * @private
-   */
-  private checkWithoutSubmissionRequirements(marked: HandlerCheckResult[], pd: IInternalPresentationDefinition): HandlerCheckResult[] {
-    const checkResult: HandlerCheckResult[] = [];
-    if (!(pd as InternalPresentationDefinitionV2).input_descriptors) {
-      return [];
-    }
-    if (!marked.length) {
-      return [
-        {
-          input_descriptor_path: '',
-          evaluator: 'checkWithoutSubmissionRequirement',
-          verifiable_credential_path: '',
-          status: Status.ERROR,
-          payload: `Not all the InputDescriptors are addressed`,
-        },
-      ];
-    }
-    const inputDescriptors = (pd as InternalPresentationDefinitionV2).input_descriptors;
-    const markedInputDescriptorPaths: string[] = ObjectUtils.getDistinctFieldInObject(marked, 'input_descriptor_path') as string[];
-    if (markedInputDescriptorPaths.length !== inputDescriptors.length) {
-      const inputDescriptorsFromLogs = (
-        markedInputDescriptorPaths.map((value) => JsonPathUtils.extractInputField(pd, [value])[0].value) as InputDescriptorV2[]
-      ).map((value) => value.id);
-      for (let i = 0; i < (pd as InternalPresentationDefinitionV2).input_descriptors.length; i++) {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if (inputDescriptorsFromLogs.indexOf((pd as InternalPresentationDefinitionV2).input_descriptors[i].id) == -1) {
-          checkResult.push({
-            input_descriptor_path: `$.input_descriptors[${i}]`,
-            evaluator: 'checkWithoutSubmissionRequirement',
-            verifiable_credential_path: '',
-            status: Status.ERROR,
-            payload: `Not all the InputDescriptors are addressed`,
-          });
-        }
-      }
-    }
-    return checkResult;
-  }
-
-  private matchSubmissionRequirements(
-    pd: IInternalPresentationDefinition,
-    submissionRequirements: SubmissionRequirement[],
-    marked: HandlerCheckResult[],
-  ): SubmissionRequirementMatch[] {
-    const submissionRequirementMatches: SubmissionRequirementMatch[] = [];
-    for (const [srIndex, sr] of Object.entries(submissionRequirements)) {
-      // Create a default SubmissionRequirementMatch object
-      const srm: SubmissionRequirementMatch = {
-        rule: sr.rule,
-        vc_path: [],
-
-        name: sr.name,
-        type: SubmissionRequirementMatchType.SubmissionRequirement,
-        id: Number(srIndex),
+          return `$.verifiableCredential[${selectableIndex}]`;
+        }),
       };
-
-      if (sr.from) {
-        srm.from = sr.from;
-      }
-      // Assign min, max, and count regardless of 'from' or 'from_nested'
-      sr.min ? (srm.min = sr.min) : undefined;
-      sr.max ? (srm.max = sr.max) : undefined;
-      sr.count ? (srm.count = sr.count) : undefined;
-
-      if (sr.from) {
-        const matchingVcPaths = this.getMatchingVcPathsForSubmissionRequirement(pd, sr, marked);
-        srm.vc_path.push(...matchingVcPaths);
-        submissionRequirementMatches.push(srm);
-      } else if (sr.from_nested) {
-        // Recursive call to matchSubmissionRequirements for nested requirements
-        try {
-          srm.from_nested = this.matchSubmissionRequirements(pd, sr.from_nested, marked);
-          submissionRequirementMatches.push(srm);
-        } catch (err) {
-          throw new Error(`Error in handling value of from_nested: ${sr.from_nested}: err: ${err}`);
-        }
-      } else {
-        // Throw an error if neither 'from' nor 'from_nested' is found
-        throw new Error("Invalid SubmissionRequirement object: Must contain either 'from' or 'from_nested'");
-      }
     }
-    return submissionRequirementMatches;
+
+    if (match.from) {
+      return {
+        ...match,
+        input_descriptors: match.input_descriptors.map((inputDescriptor) =>
+          this.remapVcPathsOnMatchToSelectableCredentialIndexes(inputDescriptor, selectableIndexes, originalVerifiableCredentials),
+        ),
+      };
+    }
+
+    if (match.from_nested) {
+      return {
+        ...match,
+        from_nested: match.from_nested.map((nested) =>
+          this.remapVcPathsOnMatchToSelectableCredentialIndexes(nested, selectableIndexes, originalVerifiableCredentials),
+        ),
+      };
+    }
+
+    throw new Error('Unsupported match type');
   }
 
-  private matchWithoutSubmissionRequirements(marked: HandlerCheckResult[], pd: IInternalPresentationDefinition): SubmissionRequirementMatch[] {
-    const submissionRequirementMatches: SubmissionRequirementMatch[] = [];
-    const partitionedIdToVcMap: Map<string, string[]> = this.createIdToVcMap(marked);
-    for (const [idPath, sameIdVcs] of partitionedIdToVcMap.entries()) {
-      if (!sameIdVcs || !sameIdVcs.length) {
-        continue;
-      }
-      for (const vcPath of sameIdVcs) {
-        const inputDescriptorResults = JsonPathUtils.extractInputField<InputDescriptorV1 | InputDescriptorV2>(pd, [idPath]);
-        if (inputDescriptorResults.length) {
-          const inputDescriptor = inputDescriptorResults[0].value;
-          submissionRequirementMatches.push({
-            name: inputDescriptor.name || inputDescriptor.id,
-            rule: Rules.All,
-            vc_path: [vcPath],
+  private extractVcPathsFromMatches(matches: SubmissionRequirementMatch[]): string[] {
+    const vcPaths: string[] = [];
 
-            type: SubmissionRequirementMatchType.InputDescriptor,
-            id: inputDescriptor.id,
-          });
-        }
+    for (const match of matches) {
+      if (match.type === SubmissionRequirementMatchType.InputDescriptor) {
+        vcPaths.push(...match.vc_path);
+      } else if (match.from) {
+        vcPaths.push(...this.extractVcPathsFromMatches(match.input_descriptors));
+      } else if (match.from_nested) {
+        vcPaths.push(...this.extractVcPathsFromMatches(match.from_nested));
       }
     }
-    return this.removeDuplicateSubmissionRequirementMatches(submissionRequirementMatches);
+    return Array.from(new Set(vcPaths));
   }
 
-  private getMatchingVcPathsForSubmissionRequirement(
+  private getSubmissionRequirementMatchForSubmissionRequirement(
     pd: IInternalPresentationDefinition,
     sr: SubmissionRequirement,
-    marked: HandlerCheckResult[],
-  ): string[] {
-    const vcPaths = new Set<string>();
+    srIndex: number,
+    idToVcMap: Map<string, string[]>,
+  ): SubmissionRequirementMatchFrom | SubmissionRequirementMatchFromNested {
+    const rulePick = {
+      type: 'pick' as const,
+      min: sr.min,
+      max: sr.max,
+      count: sr.count,
+    };
 
-    if (!sr.from) return Array.from(vcPaths);
+    if (sr.from) {
+      const from = sr.from;
+      const inputDescriptorsForGroup = pd.input_descriptors.filter((i) => i.group?.includes(from));
 
-    for (const m of marked) {
-      const inputDescriptor: InputDescriptorV2 = jp.query(pd, m.input_descriptor_path)[0];
-      if (inputDescriptor.group && inputDescriptor.group.indexOf(sr.from) === -1) {
-        continue;
-      }
-      if (m.payload.group.includes(sr.from)) {
-        vcPaths.add(m.verifiable_credential_path);
-      }
+      const inputDescriptorMatches = inputDescriptorsForGroup.map((inputDescriptor): SubmissionRequirementMatchInputDescriptor => {
+        const vcPaths = idToVcMap.get(inputDescriptor.id) ?? [];
+        return {
+          id: inputDescriptor.id,
+          name: inputDescriptor.name,
+          type: SubmissionRequirementMatchType.InputDescriptor,
+          vc_path: vcPaths,
+          areRequiredCredentialsPresent: vcPaths.length === 1 ? Status.INFO : vcPaths.length > 1 ? Status.WARN : Status.ERROR,
+        };
+      });
+
+      const successInputDescriptors = inputDescriptorMatches.filter(
+        (match) => match.areRequiredCredentialsPresent === Status.INFO || match.areRequiredCredentialsPresent === Status.WARN,
+      );
+      const hasWarning = successInputDescriptors.some((match) => match.areRequiredCredentialsPresent === Status.WARN);
+      const counStatus = this.determineCountStatus({
+        rule:
+          sr.rule === 'all'
+            ? {
+                count: inputDescriptorsForGroup.length,
+              }
+            : sr,
+        hasCount: successInputDescriptors.length,
+      });
+
+      return {
+        id: srIndex,
+        name: sr.name,
+        type: SubmissionRequirementMatchType.SubmissionRequirement,
+        from: sr.from,
+        areRequiredCredentialsPresent: counStatus === Status.INFO && hasWarning ? Status.WARN : counStatus,
+        rule:
+          sr.rule === 'pick'
+            ? rulePick
+            : {
+                type: sr.rule,
+                count: inputDescriptorsForGroup.length,
+              },
+        input_descriptors: inputDescriptorMatches,
+      } satisfies SubmissionRequirementMatchFrom;
     }
 
-    return Array.from(vcPaths);
+    if (sr.from_nested) {
+      const nestedMatches = sr.from_nested.map((nsr, nsrIndex) =>
+        this.getSubmissionRequirementMatchForSubmissionRequirement(pd, nsr, nsrIndex, idToVcMap),
+      );
+
+      const successMatches = nestedMatches.filter(
+        (match) => match.areRequiredCredentialsPresent === Status.INFO || match.areRequiredCredentialsPresent === Status.WARN,
+      );
+      const hasWarning = successMatches.some((match) => match.areRequiredCredentialsPresent === Status.WARN);
+      const counStatus = this.determineCountStatus({
+        rule:
+          sr.rule === 'all'
+            ? {
+                count: nestedMatches.length,
+              }
+            : sr,
+        hasCount: successMatches.length,
+      });
+
+      return {
+        id: Number(srIndex),
+        areRequiredCredentialsPresent: counStatus === Status.INFO && hasWarning ? Status.WARN : counStatus,
+        name: sr.name,
+        type: SubmissionRequirementMatchType.SubmissionRequirement,
+        from_nested: nestedMatches,
+        rule:
+          sr.rule === 'pick'
+            ? rulePick
+            : {
+                type: sr.rule,
+                count: sr.from_nested.length,
+              },
+      } satisfies SubmissionRequirementMatchFromNested;
+    }
+
+    // Throw an error if neither 'from' nor 'from_nested' is found
+    throw new Error("Invalid SubmissionRequirement object: Must contain either 'from' or 'from_nested'");
+  }
+
+  private determineCountStatus({ rule, hasCount }: { hasCount: number; rule: { count?: number; min?: number; max?: number } }) {
+    const maxStatus = !rule.max || hasCount <= rule.max ? Status.INFO : Status.WARN;
+    const minStatus = !rule.min || hasCount >= rule.min ? Status.INFO : Status.ERROR;
+    const countStatus = !rule.count || rule.count === hasCount ? Status.INFO : hasCount < rule.count ? Status.ERROR : Status.WARN;
+    const allStatuses = [maxStatus, minStatus, countStatus];
+
+    return allStatuses.includes(Status.ERROR) ? Status.ERROR : allStatuses.includes(Status.WARN) ? Status.WARN : Status.INFO;
+  }
+
+  private matchPresentationDefinition(marked: HandlerCheckResult[], pd: IInternalPresentationDefinition): SubmissionRequirementMatch[] {
+    const idToVcMap = this.createInputDescriptorIdToVcMap(marked, pd);
+
+    if (pd.submission_requirements) {
+      return pd.submission_requirements.map((sr, srIndex) => this.getSubmissionRequirementMatchForSubmissionRequirement(pd, sr, srIndex, idToVcMap));
+    }
+
+    return pd.input_descriptors.map((inputDescriptor): SubmissionRequirementMatchInputDescriptor => {
+      const vcPaths = idToVcMap.get(inputDescriptor.id) ?? [];
+      return {
+        areRequiredCredentialsPresent: vcPaths.length === 1 ? Status.INFO : vcPaths.length > 1 ? Status.WARN : Status.ERROR,
+        id: inputDescriptor.id,
+        name: inputDescriptor.name,
+        type: SubmissionRequirementMatchType.InputDescriptor,
+        vc_path: vcPaths,
+      };
+    });
   }
 
   public evaluate(
@@ -1138,139 +1115,22 @@ export class EvaluationClientWrapper {
     }
   }
 
-  private removeDuplicateSubmissionRequirementMatches(matches: SubmissionRequirementMatch[]) {
-    return matches.filter((match, index) => {
-      const _match = JSON.stringify(match);
-      return (
-        index ===
-        matches.findIndex((obj) => {
-          return JSON.stringify(obj) === _match;
-        })
-      );
-    });
-  }
-
-  public fillSelectableCredentialsToVerifiableCredentialsMapping(selectResults: SelectResults, wrappedVcs: WrappedVerifiableCredential[]) {
-    if (selectResults) {
-      selectResults.verifiableCredential?.forEach((selectableCredential) => {
-        const foundIndex = wrappedVcs.findIndex((wrappedVc) =>
-          CredentialMapper.areOriginalVerifiableCredentialsEqual(wrappedVc.original, selectableCredential),
-        );
-
-        if (foundIndex === -1) {
-          throw new Error('index is not right');
-        }
-        selectResults.vcIndexes
-          ? !selectResults.vcIndexes.includes(foundIndex) && selectResults.vcIndexes.push(foundIndex)
-          : (selectResults.vcIndexes = [foundIndex]);
-      });
-    }
-  }
-
-  public determineAreRequiredCredentialsPresent(
-    presentationDefinition: IInternalPresentationDefinition,
-    matchSubmissionRequirements: SubmissionRequirementMatch[] | undefined,
-    parentMsr?: SubmissionRequirementMatch,
-  ): Status {
+  public determineAreRequiredCredentialsPresent(matchSubmissionRequirements: SubmissionRequirementMatch[] | undefined): Status {
     if (!matchSubmissionRequirements || !matchSubmissionRequirements.length) {
       return Status.ERROR;
     }
 
-    // collect child statuses
-    const childStatuses = matchSubmissionRequirements.map((m) => this.determineSubmissionRequirementStatus(presentationDefinition, m));
+    const statuses = matchSubmissionRequirements.map((match) => match.areRequiredCredentialsPresent);
 
-    // decide status based on child statuses and parent's rule
-    if (!parentMsr) {
-      if (childStatuses.includes(Status.ERROR)) {
-        return Status.ERROR;
-      } else if (childStatuses.includes(Status.WARN)) {
-        return Status.WARN;
-      } else {
-        return Status.INFO;
-      }
-    } else {
-      if (parentMsr.rule === Rules.All && childStatuses.includes(Status.ERROR)) {
-        return Status.ERROR;
-      }
-
-      const nonErrStatCount = childStatuses.filter((status) => status !== Status.ERROR).length;
-
-      if (parentMsr.count) {
-        return parentMsr.count > nonErrStatCount ? Status.ERROR : parentMsr.count < nonErrStatCount ? Status.WARN : Status.INFO;
-      } else {
-        if (parentMsr.min && parentMsr.min > nonErrStatCount) {
-          return Status.ERROR;
-        } else if (parentMsr.max && parentMsr.max < nonErrStatCount) {
-          return Status.WARN;
-        }
-      }
-    }
-
-    return Status.INFO;
-  }
-
-  private determineSubmissionRequirementStatus(pd: IInternalPresentationDefinition, m: SubmissionRequirementMatch): Status {
-    if (m.from && m.from_nested) {
-      throw new Error('Invalid submission_requirement object: MUST contain either a from or from_nested property.');
-    }
-
-    if (!m.from && !m.from_nested && m.vc_path.length !== 1) {
+    if (statuses.includes(Status.ERROR)) {
       return Status.ERROR;
     }
 
-    if (m.from) {
-      const groupCount = this.countGroupIDs((pd as InternalPresentationDefinitionV2).input_descriptors, m.from);
-      switch (m.rule) {
-        case Rules.All:
-          // Ensure that all descriptors associated with `m.from` are satisfied.
-          return m.vc_path.length === groupCount ? Status.INFO : Status.WARN;
-        case Rules.Pick:
-          return this.getPickRuleStatus(m);
-        default:
-          return Status.ERROR;
-      }
-    } else if (m.from_nested) {
-      return this.determineAreRequiredCredentialsPresent(pd, m.from_nested, m);
-    }
-
-    return Status.INFO;
-  }
-
-  private getPickRuleStatus(m: SubmissionRequirementMatch): Status {
-    if (m.vc_path.length === 0) {
-      return Status.ERROR;
-    }
-
-    if (m.count && m.vc_path.length !== m.count) {
-      return m.vc_path.length > m.count ? Status.WARN : Status.ERROR;
-    }
-
-    if (m.min && m.vc_path.length < m.min) {
-      return Status.ERROR;
-    }
-
-    if (m.max && m.vc_path.length > m.max) {
+    if (statuses.includes(Status.WARN)) {
       return Status.WARN;
     }
 
     return Status.INFO;
-  }
-
-  private updateSubmissionRequirementMatchPathToAlias(submissionRequirementMatch: SubmissionRequirementMatch, alias: string) {
-    const vc_path: string[] = [];
-    submissionRequirementMatch.vc_path.forEach((m) => {
-      if (m.startsWith(`$.${alias}`)) {
-        vc_path.push(m);
-      } else {
-        vc_path.push(m.replace('$', `$.${alias}`));
-      }
-    });
-    submissionRequirementMatch.vc_path = vc_path;
-    if (submissionRequirementMatch.from_nested) {
-      submissionRequirementMatch.from_nested.forEach((f) => {
-        this.updateSubmissionRequirementMatchPathToAlias(f, alias);
-      });
-    }
   }
 
   private updatePresentationSubmissionPathToVpPath(presentationSubmission?: PresentationSubmission) {
@@ -1303,9 +1163,7 @@ export class EvaluationClientWrapper {
     }
   }
 
-  private createIdToVcMap(marked: HandlerCheckResult[]): Map<string, string[]> {
-    const partitionedResults: Map<string, string[]> = new Map<string, string[]>();
-
+  private createInputDescriptorIdToVcMap(marked: HandlerCheckResult[], pd: IInternalPresentationDefinition): Map<string, string[]> {
     const partitionedBasedOnId: Map<string, HandlerCheckResult[]> = new Map<string, HandlerCheckResult[]>();
     for (let i = 0; i < marked.length; i++) {
       const currentIdPath: string = marked[i].input_descriptor_path;
@@ -1319,6 +1177,7 @@ export class EvaluationClientWrapper {
       }
     }
 
+    const partitionedResults = new Map<string, string[]>();
     for (const [idPath, sameVcCheckResults] of partitionedBasedOnId.entries()) {
       const vcPaths: string[] = [];
       for (let i = 0; i < sameVcCheckResults.length; i++) {
@@ -1326,18 +1185,15 @@ export class EvaluationClientWrapper {
           vcPaths.push(sameVcCheckResults[i].verifiable_credential_path);
         }
       }
-      partitionedResults.set(idPath, vcPaths);
-    }
-    return partitionedResults;
-  }
 
-  private countGroupIDs(input_descriptors: Array<InputDescriptorV2>, from: string): number {
-    let count = 0;
-    for (const descriptor of input_descriptors) {
-      if (descriptor.group && descriptor.group.includes(from)) {
-        count++;
+      const [inputDescriptorResult] = JsonPathUtils.extractInputField<InputDescriptorV1 | InputDescriptorV2>(pd, [idPath]);
+      if (!inputDescriptorResult) {
+        throw new Error(`Unable to find input descriptor with path ${idPath} in presentation definition`);
       }
+
+      partitionedResults.set(inputDescriptorResult.value.id, vcPaths);
     }
-    return count;
+
+    return partitionedResults;
   }
 }

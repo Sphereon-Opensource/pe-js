@@ -365,16 +365,6 @@ describe('evaluate', () => {
     );
   });
 
-  it('should map successfully the links from selectable credentials to verifiable credentials.', () => {
-    const selectResults = evaluationClientWrapperData.getSelectResults();
-    new EvaluationClientWrapper().fillSelectableCredentialsToVerifiableCredentialsMapping(
-      selectResults,
-      SSITypesBuilder.mapExternalVerifiableCredentialsToWrappedVcs(evaluationClientWrapperData.getVerifiableCredential()),
-    );
-    const verifiableCredential = selectResults.verifiableCredential![0] as IVerifiableCredential;
-    expect(verifiableCredential.id).toEqual((<ICredential>evaluationClientWrapperData.getVerifiableCredential()[1]).id);
-  });
-
   it('should pass with correct submissionFrom result name and roles with 2 groups', function () {
     const clientWrapper: EvaluationClientWrapper = new EvaluationClientWrapper();
     const pdSchema: PresentationDefinitionV2 = {
@@ -502,7 +492,7 @@ describe('evaluate', () => {
       holderDIDs: undefined,
       limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
     });
-    expect(resultSelectFrom.areRequiredCredentialsPresent).toEqual(Status.WARN);
+    expect(resultSelectFrom.areRequiredCredentialsPresent).toEqual(Status.INFO);
     const ps: PresentationSubmission = clientWrapper.submissionFrom(internalPD, wvcs);
     expect(ps.descriptor_map.map((d) => d.path)).toEqual(['$.verifiableCredential[0]', '$.verifiableCredential[0]', '$.verifiableCredential[1]']);
   });
@@ -602,7 +592,7 @@ describe('evaluate', () => {
       holderDIDs: undefined,
       limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
     });
-    expect(resultSelectFrom.areRequiredCredentialsPresent).toEqual(Status.WARN);
+    expect(resultSelectFrom.areRequiredCredentialsPresent).toEqual(Status.INFO);
     expect(resultSelectFrom.verifiableCredential?.length).toEqual(1);
     const ps: PresentationSubmission = clientWrapper.submissionFrom(
       internalPD,

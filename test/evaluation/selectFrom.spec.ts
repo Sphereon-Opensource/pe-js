@@ -2,7 +2,6 @@ import { createHash } from 'crypto';
 import fs from 'fs';
 
 import { SDJwt } from '@sd-jwt/core';
-import { Rules } from '@sphereon/pex-models';
 import { IVerifiableCredential, WrappedVerifiableCredential } from '@sphereon/ssi-types';
 
 import { PEX, Status } from '../../lib';
@@ -53,87 +52,42 @@ describe('selectFrom tests', () => {
       matches: [
         {
           from: 'A',
-          vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]', '$.verifiableCredential[2]'],
           name: 'Submission of educational transcripts',
-          rule: 'all',
           id: 0,
+          areRequiredCredentialsPresent: Status.INFO,
+          rule: {
+            type: 'all',
+            count: 3,
+          },
+          input_descriptors: [
+            {
+              areRequiredCredentialsPresent: Status.INFO,
+              id: 'Educational transcripts',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[0]'],
+            },
+            {
+              areRequiredCredentialsPresent: Status.INFO,
+              id: 'Educational transcripts 1',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[1]'],
+            },
+            {
+              areRequiredCredentialsPresent: Status.INFO,
+              id: 'Educational transcripts 2',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[2]'],
+            },
+          ],
           type: SubmissionRequirementMatchType.SubmissionRequirement,
         },
       ],
-      verifiableCredential: [
-        {
-          iss: 'did:example:123',
-          FIXME: 'THIS DOESNT MAKE SENSE. The is a decoded JWT as an object in the array. It should just be a JWT VC as string',
-          vc: {
-            '@context': 'https://eu.com/claims/DriversLicense',
-            credentialSubject: {
-              accounts: [
-                {
-                  id: '1234567890',
-                  route: 'DE-9876543210',
-                },
-                {
-                  id: '2457913570',
-                  route: 'DE-0753197542',
-                },
-              ],
-              id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-            },
-            id: 'https://eu.com/claims/DriversLicense',
-            issuanceDate: '2010-01-01T19:73:24Z',
-            issuer: 'did:example:123',
-            type: ['VerifiableCredential', 'EUDriversLicense'],
-          },
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'EcdsaSecp256k1VerificationKey2019',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-        },
-        {
-          '@context': 'https://business-standards.org/schemas/employment-history.json',
-          credentialSubject: {
-            active: true,
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-          },
-          id: 'https://business-standards.org/schemas/employment-history.json',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'EcdsaSecp256k1VerificationKey2019',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'GenericEmploymentCredential'],
-        },
-        {
-          '@context': 'https://www.w3.org/2018/credentials/v1',
-          credentialSubject: {
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-            license: {
-              dob: '07/13/80',
-              number: '34DGE352',
-            },
-          },
-          id: 'https://eu.com/claims/DriversLicense',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'RsaSignature2018',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'EUDriversLicense'],
-        },
-      ],
+      verifiableCredential: [vpSimple.verifiableCredential[0], vpSimple.verifiableCredential[1], vpSimple.verifiableCredential[2]],
       warnings: [],
-      vcIndexes: [0, 2],
+      vcIndexes: [0, 1, 2],
     });
   });
 
@@ -177,58 +131,36 @@ describe('selectFrom tests', () => {
       errors: [],
       matches: [
         {
-          from: 'B',
-          vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]'],
-          min: 2,
-          name: 'Eligibility to Work Proof',
-          rule: 'pick',
           id: 0,
+          name: 'Eligibility to Work Proof',
           type: SubmissionRequirementMatchType.SubmissionRequirement,
-        },
-      ],
-      verifiableCredential: [
-        {
-          '@context': 'https://business-standards.org/schemas/employment-history.json',
-          credentialSubject: {
-            active: true,
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
+          from: 'B',
+          areRequiredCredentialsPresent: Status.INFO,
+          rule: {
+            type: 'pick',
+            min: 2,
           },
-          id: 'https://business-standards.org/schemas/employment-history.json',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'EcdsaSecp256k1VerificationKey2019',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'GenericEmploymentCredential'],
-        },
-        {
-          '@context': 'https://www.w3.org/2018/credentials/v1',
-          credentialSubject: {
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-            license: {
-              dob: '07/13/80',
-              number: '34DGE352',
+          input_descriptors: [
+            {
+              id: 'Educational transcripts 1',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[0]'],
+              areRequiredCredentialsPresent: Status.INFO,
             },
-          },
-          id: 'https://eu.com/claims/DriversLicense',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'RsaSignature2018',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'EUDriversLicense'],
+            {
+              id: 'Educational transcripts 2',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[1]'],
+              areRequiredCredentialsPresent: Status.INFO,
+            },
+          ],
         },
       ],
+      verifiableCredential: [vpSimple.verifiableCredential[1], vpSimple.verifiableCredential[2]],
       warnings: [],
-      vcIndexes: [0, 2],
+      vcIndexes: [1, 2],
     });
   });
 
@@ -272,58 +204,36 @@ describe('selectFrom tests', () => {
       errors: [],
       matches: [
         {
-          from: 'B',
-          vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]'],
-          max: 2,
-          rule: 'pick',
           id: 0,
           name: 'Eligibility to Work Proof',
           type: SubmissionRequirementMatchType.SubmissionRequirement,
-        },
-      ],
-      verifiableCredential: [
-        {
-          '@context': 'https://business-standards.org/schemas/employment-history.json',
-          credentialSubject: {
-            active: true,
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
+          from: 'B',
+          areRequiredCredentialsPresent: Status.INFO,
+          rule: {
+            type: 'pick',
+            max: 2,
           },
-          id: 'https://business-standards.org/schemas/employment-history.json',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'EcdsaSecp256k1VerificationKey2019',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'GenericEmploymentCredential'],
-        },
-        {
-          '@context': 'https://www.w3.org/2018/credentials/v1',
-          credentialSubject: {
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-            license: {
-              dob: '07/13/80',
-              number: '34DGE352',
+          input_descriptors: [
+            {
+              id: 'Educational transcripts 1',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[0]'],
+              areRequiredCredentialsPresent: Status.INFO,
             },
-          },
-          id: 'https://eu.com/claims/DriversLicense',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'RsaSignature2018',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'EUDriversLicense'],
+            {
+              id: 'Educational transcripts 2',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[1]'],
+              areRequiredCredentialsPresent: Status.INFO,
+            },
+          ],
         },
       ],
+      verifiableCredential: [vpSimple.verifiableCredential[1], vpSimple.verifiableCredential[2]],
       warnings: [],
-      vcIndexes: [0, 2],
+      vcIndexes: [1, 2],
     });
   });
 
@@ -348,108 +258,80 @@ describe('selectFrom tests', () => {
       errors: [],
       matches: [
         {
-          from_nested: [
-            {
-              from: 'A',
-              vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]', '$.verifiableCredential[2]'],
-              rule: 'all',
-              id: 0,
-              // submission requirement from_nested has no name
-              name: undefined,
-              type: SubmissionRequirementMatchType.SubmissionRequirement,
-            },
-            {
-              count: 2,
-              from: 'B',
-              vc_path: ['$.verifiableCredential[1]', '$.verifiableCredential[2]'],
-              rule: 'pick',
-              id: 1,
-              // submission requirement from_nested has no name
-              name: undefined,
-              type: SubmissionRequirementMatchType.SubmissionRequirement,
-            },
-          ],
-          vc_path: [],
-          rule: 'all',
           id: 0,
+          areRequiredCredentialsPresent: Status.INFO,
           name: 'Confirm banking relationship or employment and residence proofs',
           type: SubmissionRequirementMatchType.SubmissionRequirement,
-        },
-      ],
-      verifiableCredential: [
-        {
-          FIXME: 'THIS DOESNT MAKE SENSE. The is a decoded JWT as an object in the array. It should just be a JWT VC as string',
-          iss: 'did:example:123',
-          vc: {
-            '@context': 'https://eu.com/claims/DriversLicense',
-            credentialSubject: {
-              accounts: [
+          from_nested: [
+            {
+              id: 0,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'A',
+              areRequiredCredentialsPresent: Status.INFO,
+              rule: {
+                type: 'all',
+                count: 3,
+              },
+              input_descriptors: [
                 {
-                  id: '1234567890',
-                  route: 'DE-9876543210',
+                  id: 'Educational transcripts',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[0]'],
+                  areRequiredCredentialsPresent: Status.INFO,
                 },
                 {
-                  id: '2457913570',
-                  route: 'DE-0753197542',
+                  id: 'Educational transcripts 1',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[1]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+                {
+                  id: 'Educational transcripts 2',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[2]'],
+                  areRequiredCredentialsPresent: Status.INFO,
                 },
               ],
-              id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
             },
-            id: 'https://eu.com/claims/DriversLicense',
-            issuanceDate: '2010-01-01T19:73:24Z',
-            issuer: 'did:example:123',
-            type: ['VerifiableCredential', 'EUDriversLicense'],
-          },
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'EcdsaSecp256k1VerificationKey2019',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-        },
-        {
-          '@context': 'https://business-standards.org/schemas/employment-history.json',
-          credentialSubject: {
-            active: true,
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-          },
-          id: 'https://business-standards.org/schemas/employment-history.json',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'EcdsaSecp256k1VerificationKey2019',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'GenericEmploymentCredential'],
-        },
-        {
-          '@context': 'https://www.w3.org/2018/credentials/v1',
-          credentialSubject: {
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-            license: {
-              dob: '07/13/80',
-              number: '34DGE352',
+            {
+              id: 1,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'B',
+              areRequiredCredentialsPresent: Status.INFO,
+              rule: {
+                type: 'pick',
+                count: 2,
+              },
+              input_descriptors: [
+                {
+                  id: 'Educational transcripts 1',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[1]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+                {
+                  id: 'Educational transcripts 2',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[2]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+              ],
             },
+          ],
+          rule: {
+            type: 'all',
+            count: 2,
           },
-          id: 'https://eu.com/claims/DriversLicense',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'RsaSignature2018',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'EUDriversLicense'],
         },
       ],
+      verifiableCredential: [vpSimple.verifiableCredential[0], vpSimple.verifiableCredential[1], vpSimple.verifiableCredential[2]],
       warnings: [],
-      vcIndexes: [0, 2],
+      vcIndexes: [0, 1, 2],
     });
   });
 
@@ -474,109 +356,80 @@ describe('selectFrom tests', () => {
       errors: [],
       matches: [
         {
-          from_nested: [
-            {
-              from: 'A',
-              vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]', '$.verifiableCredential[2]'],
-              rule: 'all',
-              id: 0,
-              // submission requirement from_nested has no name
-              name: undefined,
-              type: SubmissionRequirementMatchType.SubmissionRequirement,
-            },
-            {
-              count: 2,
-              from: 'B',
-              vc_path: ['$.verifiableCredential[1]', '$.verifiableCredential[2]'],
-              rule: 'pick',
-              id: 1,
-              // submission requirement from_nested has no name
-              name: undefined,
-              type: SubmissionRequirementMatchType.SubmissionRequirement,
-            },
-          ],
-          vc_path: [],
-          min: 1,
-          rule: 'pick',
           id: 0,
+          areRequiredCredentialsPresent: Status.INFO,
           name: 'Confirm banking relationship or employment and residence proofs',
           type: SubmissionRequirementMatchType.SubmissionRequirement,
-        },
-      ],
-      verifiableCredential: [
-        {
-          iss: 'did:example:123',
-          FIXME: 'THIS DOESNT MAKE SENSE. The is a decoded JWT as an object in the array. It should just be a JWT VC as string',
-          vc: {
-            '@context': 'https://eu.com/claims/DriversLicense',
-            credentialSubject: {
-              accounts: [
+          from_nested: [
+            {
+              id: 0,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'A',
+              areRequiredCredentialsPresent: Status.INFO,
+              rule: {
+                type: 'all',
+                count: 3,
+              },
+              input_descriptors: [
                 {
-                  id: '1234567890',
-                  route: 'DE-9876543210',
+                  id: 'Educational transcripts',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[0]'],
+                  areRequiredCredentialsPresent: Status.INFO,
                 },
                 {
-                  id: '2457913570',
-                  route: 'DE-0753197542',
+                  id: 'Educational transcripts 1',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[1]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+                {
+                  id: 'Educational transcripts 2',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[2]'],
+                  areRequiredCredentialsPresent: Status.INFO,
                 },
               ],
-              id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
             },
-            id: 'https://eu.com/claims/DriversLicense',
-            issuanceDate: '2010-01-01T19:73:24Z',
-            issuer: 'did:example:123',
-            type: ['VerifiableCredential', 'EUDriversLicense'],
-          },
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'EcdsaSecp256k1VerificationKey2019',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-        },
-        {
-          '@context': 'https://business-standards.org/schemas/employment-history.json',
-          credentialSubject: {
-            active: true,
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-          },
-          id: 'https://business-standards.org/schemas/employment-history.json',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'EcdsaSecp256k1VerificationKey2019',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'GenericEmploymentCredential'],
-        },
-        {
-          '@context': 'https://www.w3.org/2018/credentials/v1',
-          credentialSubject: {
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-            license: {
-              dob: '07/13/80',
-              number: '34DGE352',
+            {
+              id: 1,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'B',
+              areRequiredCredentialsPresent: Status.INFO,
+              rule: {
+                type: 'pick',
+                count: 2,
+              },
+              input_descriptors: [
+                {
+                  id: 'Educational transcripts 1',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[1]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+                {
+                  id: 'Educational transcripts 2',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[2]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+              ],
             },
+          ],
+          rule: {
+            type: 'pick',
+            min: 1,
           },
-          id: 'https://eu.com/claims/DriversLicense',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'RsaSignature2018',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'EUDriversLicense'],
         },
       ],
+      verifiableCredential: [vpSimple.verifiableCredential[0], vpSimple.verifiableCredential[1], vpSimple.verifiableCredential[2]],
       warnings: [],
-      vcIndexes: [0, 2],
+      vcIndexes: [0, 1, 2],
     });
   });
 
@@ -597,113 +450,84 @@ describe('selectFrom tests', () => {
         limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
       }),
     ).toEqual({
-      areRequiredCredentialsPresent: Status.INFO,
       errors: [],
       matches: [
         {
-          from_nested: [
-            {
-              from: 'A',
-              vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]', '$.verifiableCredential[2]'],
-              rule: 'all',
-              id: 0,
-              // submission requirement from_nested has no name
-              name: undefined,
-              type: SubmissionRequirementMatchType.SubmissionRequirement,
-            },
-            {
-              count: 2,
-              from: 'B',
-              vc_path: ['$.verifiableCredential[1]', '$.verifiableCredential[2]'],
-              rule: 'pick',
-              id: 1,
-              // submission requirement from_nested has no name
-              name: undefined,
-              type: SubmissionRequirementMatchType.SubmissionRequirement,
-            },
-          ],
-          vc_path: [],
-          max: 2,
-          rule: 'pick',
           id: 0,
+          areRequiredCredentialsPresent: Status.INFO,
           name: 'Confirm banking relationship or employment and residence proofs',
           type: SubmissionRequirementMatchType.SubmissionRequirement,
-        },
-      ],
-      verifiableCredential: [
-        {
-          iss: 'did:example:123',
-          FIXME: 'THIS DOESNT MAKE SENSE. The is a decoded JWT as an object in the array. It should just be a JWT VC as string',
-          vc: {
-            '@context': 'https://eu.com/claims/DriversLicense',
-            credentialSubject: {
-              accounts: [
+          from_nested: [
+            {
+              id: 0,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'A',
+              areRequiredCredentialsPresent: Status.INFO,
+              rule: {
+                type: 'all',
+                count: 3,
+              },
+              input_descriptors: [
                 {
-                  id: '1234567890',
-                  route: 'DE-9876543210',
+                  id: 'Educational transcripts',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[0]'],
+                  areRequiredCredentialsPresent: Status.INFO,
                 },
                 {
-                  id: '2457913570',
-                  route: 'DE-0753197542',
+                  id: 'Educational transcripts 1',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[1]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+                {
+                  id: 'Educational transcripts 2',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[2]'],
+                  areRequiredCredentialsPresent: Status.INFO,
                 },
               ],
-              id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
             },
-            id: 'https://eu.com/claims/DriversLicense',
-            issuanceDate: '2010-01-01T19:73:24Z',
-            issuer: 'did:example:123',
-            type: ['VerifiableCredential', 'EUDriversLicense'],
-          },
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'EcdsaSecp256k1VerificationKey2019',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-        },
-        {
-          '@context': 'https://business-standards.org/schemas/employment-history.json',
-          credentialSubject: {
-            active: true,
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-          },
-          id: 'https://business-standards.org/schemas/employment-history.json',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'EcdsaSecp256k1VerificationKey2019',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'GenericEmploymentCredential'],
-        },
-        {
-          '@context': 'https://www.w3.org/2018/credentials/v1',
-          credentialSubject: {
-            id: 'did:example:ebfeb1f712ebc6f1c276e12ec21',
-            license: {
-              dob: '07/13/80',
-              number: '34DGE352',
+            {
+              id: 1,
+              type: SubmissionRequirementMatchType.SubmissionRequirement,
+              from: 'B',
+              areRequiredCredentialsPresent: Status.INFO,
+              rule: {
+                type: 'pick',
+                count: 2,
+              },
+              input_descriptors: [
+                {
+                  id: 'Educational transcripts 1',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[1]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+                {
+                  id: 'Educational transcripts 2',
+                  name: 'Submission of educational transcripts',
+                  type: SubmissionRequirementMatchType.InputDescriptor,
+                  vc_path: ['$.verifiableCredential[2]'],
+                  areRequiredCredentialsPresent: Status.INFO,
+                },
+              ],
             },
+          ],
+          rule: {
+            type: 'pick',
+            max: 2,
           },
-          id: 'https://eu.com/claims/DriversLicense',
-          issuanceDate: '2010-01-01T19:73:24Z',
-          issuer: 'did:foo:123',
-          proof: {
-            created: '2017-06-18T21:19:10Z',
-            jws: '...',
-            proofPurpose: 'assertionMethod',
-            type: 'RsaSignature2018',
-            verificationMethod: 'https://example.edu/issuers/keys/1',
-          },
-          type: ['VerifiableCredential', 'EUDriversLicense'],
         },
       ],
+      areRequiredCredentialsPresent: Status.INFO,
+      verifiableCredential: [vpSimple.verifiableCredential[0], vpSimple.verifiableCredential[1], vpSimple.verifiableCredential[2]],
       warnings: [],
-      vcIndexes: [0, 2],
+      vcIndexes: [0, 1, 2],
     });
   });
 
@@ -807,13 +631,31 @@ describe('selectFrom tests', () => {
     ]);
     expect(result.matches).toEqual([
       {
-        from: 'B',
-        vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]'],
-        min: 3,
-        rule: 'pick',
         id: 0,
-        type: SubmissionRequirementMatchType.SubmissionRequirement,
         name: 'Eligibility to Work Proof',
+        type: SubmissionRequirementMatchType.SubmissionRequirement,
+        from: 'B',
+        areRequiredCredentialsPresent: Status.ERROR,
+        rule: {
+          type: 'pick',
+          min: 3,
+        },
+        input_descriptors: [
+          {
+            id: 'Educational transcripts 1',
+            name: 'Submission of educational transcripts',
+            type: SubmissionRequirementMatchType.InputDescriptor,
+            vc_path: ['$.verifiableCredential[0]'],
+            areRequiredCredentialsPresent: Status.INFO,
+          },
+          {
+            id: 'Educational transcripts 2',
+            name: 'Submission of educational transcripts',
+            type: SubmissionRequirementMatchType.InputDescriptor,
+            vc_path: ['$.verifiableCredential[1]'],
+            areRequiredCredentialsPresent: Status.INFO,
+          },
+        ],
       },
     ]);
   });
@@ -836,16 +678,34 @@ describe('selectFrom tests', () => {
     expect(result.matches).toEqual([
       {
         from: 'B',
-        vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]'],
-        max: 1,
-        rule: 'pick',
+        rule: {
+          type: 'pick',
+          max: 1,
+        },
+        areRequiredCredentialsPresent: Status.WARN,
+        input_descriptors: [
+          {
+            areRequiredCredentialsPresent: Status.INFO,
+            id: 'Educational transcripts 1',
+            name: 'Submission of educational transcripts',
+            type: SubmissionRequirementMatchType.InputDescriptor,
+            vc_path: ['$.verifiableCredential[0]'],
+          },
+          {
+            areRequiredCredentialsPresent: Status.INFO,
+            id: 'Educational transcripts 2',
+            name: 'Submission of educational transcripts',
+            type: SubmissionRequirementMatchType.InputDescriptor,
+            vc_path: ['$.verifiableCredential[1]'],
+          },
+        ],
         type: SubmissionRequirementMatchType.SubmissionRequirement,
         name: 'Eligibility to Work Proof',
         id: 0,
       },
     ]);
     expect(result.errors?.length).toEqual(16);
-    expect(result.verifiableCredential?.length).toEqual(3);
+    expect(result.verifiableCredential?.length).toEqual(2);
     expect(result.areRequiredCredentialsPresent).toEqual(Status.WARN);
   });
 
@@ -865,7 +725,7 @@ describe('selectFrom tests', () => {
       limitDisclosureSignatureSuites: LIMIT_DISCLOSURE_SIGNATURE_SUITES,
     });
     expect(result.matches?.length).toEqual(1);
-    expect(result.verifiableCredential?.length).toEqual(3);
+    expect(result.verifiableCredential?.length).toEqual(2);
     expect(result.errors?.length).toEqual(16);
     expect(result.areRequiredCredentialsPresent).toEqual(Status.WARN);
   });
@@ -910,33 +770,75 @@ describe('selectFrom tests', () => {
     expect(result.areRequiredCredentialsPresent).toEqual(Status.INFO);
     expect(result.matches?.length).toEqual(1);
     expect(result.matches![0]).toEqual({
+      id: 0,
+      areRequiredCredentialsPresent: Status.INFO,
+      name: 'Confirm banking relationship or employment and residence proofs',
+      type: SubmissionRequirementMatchType.SubmissionRequirement,
       from_nested: [
         {
-          from: 'A',
-          rule: Rules.All,
-          vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]', '$.verifiableCredential[2]'],
           id: 0,
-          // submission requirement from_nested has no name
-          name: undefined,
           type: SubmissionRequirementMatchType.SubmissionRequirement,
+          from: 'A',
+          areRequiredCredentialsPresent: Status.INFO,
+          rule: {
+            type: 'all',
+            count: 3,
+          },
+          input_descriptors: [
+            {
+              id: 'Educational transcripts',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[0]'],
+              areRequiredCredentialsPresent: Status.INFO,
+            },
+            {
+              id: 'Educational transcripts 1',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[1]'],
+              areRequiredCredentialsPresent: Status.INFO,
+            },
+            {
+              id: 'Educational transcripts 2',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[2]'],
+              areRequiredCredentialsPresent: Status.INFO,
+            },
+          ],
         },
         {
-          count: 2,
-          from: 'B',
-          rule: Rules.Pick,
-          vc_path: ['$.verifiableCredential[1]', '$.verifiableCredential[2]'],
           id: 1,
-          // submission requirement from_nested has no name
-          name: undefined,
           type: SubmissionRequirementMatchType.SubmissionRequirement,
+          from: 'B',
+          areRequiredCredentialsPresent: Status.INFO,
+          rule: {
+            type: 'pick',
+            count: 2,
+          },
+          input_descriptors: [
+            {
+              id: 'Educational transcripts 1',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[1]'],
+              areRequiredCredentialsPresent: Status.INFO,
+            },
+            {
+              id: 'Educational transcripts 2',
+              name: 'Submission of educational transcripts',
+              type: SubmissionRequirementMatchType.InputDescriptor,
+              vc_path: ['$.verifiableCredential[2]'],
+              areRequiredCredentialsPresent: Status.INFO,
+            },
+          ],
         },
       ],
-      min: 1,
-      name: 'Confirm banking relationship or employment and residence proofs',
-      rule: Rules.Pick,
-      vc_path: [],
-      id: 0,
-      type: SubmissionRequirementMatchType.SubmissionRequirement,
+      rule: {
+        type: 'pick',
+        min: 1,
+      },
     });
   });
 
@@ -958,34 +860,75 @@ describe('selectFrom tests', () => {
     expect(result.areRequiredCredentialsPresent).toEqual(Status.WARN);
     expect(result.matches).toEqual([
       {
+        id: 0,
+        areRequiredCredentialsPresent: Status.WARN,
+        name: 'Confirm banking relationship or employment and residence proofs',
+        type: SubmissionRequirementMatchType.SubmissionRequirement,
         from_nested: [
           {
-            from: 'A',
-            vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]', '$.verifiableCredential[2]'],
-            rule: 'all',
             id: 0,
-            // submission requirement from_nested has no name
-            name: undefined,
             type: SubmissionRequirementMatchType.SubmissionRequirement,
+            from: 'A',
+            areRequiredCredentialsPresent: Status.INFO,
+            rule: {
+              type: 'all',
+              count: 3,
+            },
+            input_descriptors: [
+              {
+                id: 'Educational transcripts',
+                name: 'Submission of educational transcripts',
+                type: SubmissionRequirementMatchType.InputDescriptor,
+                vc_path: ['$.verifiableCredential[0]'],
+                areRequiredCredentialsPresent: Status.INFO,
+              },
+              {
+                id: 'Educational transcripts 1',
+                name: 'Submission of educational transcripts',
+                type: SubmissionRequirementMatchType.InputDescriptor,
+                vc_path: ['$.verifiableCredential[1]'],
+                areRequiredCredentialsPresent: Status.INFO,
+              },
+              {
+                id: 'Educational transcripts 2',
+                name: 'Submission of educational transcripts',
+                type: SubmissionRequirementMatchType.InputDescriptor,
+                vc_path: ['$.verifiableCredential[2]'],
+                areRequiredCredentialsPresent: Status.INFO,
+              },
+            ],
           },
           {
-            count: 2,
-            from: 'B',
-            vc_path: ['$.verifiableCredential[1]', '$.verifiableCredential[2]'],
-            rule: 'pick',
             id: 1,
-            // submission requirement from_nested has no name
-            name: undefined,
             type: SubmissionRequirementMatchType.SubmissionRequirement,
+            from: 'B',
+            areRequiredCredentialsPresent: Status.INFO,
+            rule: {
+              type: 'pick',
+              count: 2,
+            },
+            input_descriptors: [
+              {
+                id: 'Educational transcripts 1',
+                name: 'Submission of educational transcripts',
+                type: SubmissionRequirementMatchType.InputDescriptor,
+                vc_path: ['$.verifiableCredential[1]'],
+                areRequiredCredentialsPresent: Status.INFO,
+              },
+              {
+                id: 'Educational transcripts 2',
+                name: 'Submission of educational transcripts',
+                type: SubmissionRequirementMatchType.InputDescriptor,
+                vc_path: ['$.verifiableCredential[2]'],
+                areRequiredCredentialsPresent: Status.INFO,
+              },
+            ],
           },
         ],
-        vc_path: [],
-        // submission requirement name
-        name: 'Confirm banking relationship or employment and residence proofs',
-        rule: 'pick',
-        max: 1,
-        type: SubmissionRequirementMatchType.SubmissionRequirement,
-        id: 0,
+        rule: {
+          type: 'pick',
+          max: 1,
+        },
       },
     ]);
     expect(result.errors?.length).toEqual(16);
@@ -1009,7 +952,7 @@ describe('selectFrom tests', () => {
       name: "EU Driver's License",
       id: 'citizenship_input_1',
       type: SubmissionRequirementMatchType.InputDescriptor,
-      rule: 'all',
+      areRequiredCredentialsPresent: Status.INFO,
       vc_path: ['$.verifiableCredential[0]'],
     });
   });
@@ -1051,8 +994,6 @@ describe('selectFrom tests', () => {
     const cred = await SDJwt.fromEncode(presentationResult.presentations[1].compactSdJwtVc, hasher);
     const claims = await cred.getClaims<Record<string, ClaimValue>>(hasher);
 
-    console.log(claims);
-
     // Check data group 1
     expect((claims.electronicPassport as { dataGroup1: Record<string, string> }).dataGroup1.birthdate).toBe('2024-10-09');
     expect((claims.electronicPassport as { dataGroup1: Record<string, string> }).dataGroup1.issuerCode).toBe('d');
@@ -1092,7 +1033,6 @@ describe('selectFrom tests', () => {
     expect(presentationResult).toBeDefined();
     const cred = await SDJwt.fromEncode(presentationResult.presentations[0].compactSdJwtVc, hasher);
     const claims = await cred.getClaims<Record<string, ClaimValue>>(hasher);
-    console.log(claims);
 
     // Check personal information
     expect(claims.family_name).toBe('MUSTERMANN');

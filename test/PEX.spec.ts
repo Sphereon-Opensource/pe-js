@@ -1425,21 +1425,21 @@ describe('evaluate', () => {
     expect(result.matches).toEqual([
       {
         name: 'Residence permit date of birth and photo',
-        rule: 'all',
+        areRequiredCredentialsPresent: 'info',
         vc_path: ['$.verifiableCredential[0]'],
         type: 'InputDescriptor',
         id: 'ResidencePermit',
       },
       {
         name: 'ID date of birth and photo',
-        rule: 'all',
+        areRequiredCredentialsPresent: 'info',
         vc_path: ['$.verifiableCredential[1]'],
         type: 'InputDescriptor',
         id: 'IDDoB',
       },
       {
         name: 'Driving licence date of birth and photo',
-        rule: 'all',
+        areRequiredCredentialsPresent: 'info',
         vc_path: ['$.verifiableCredential[2]'],
         type: 'InputDescriptor',
         id: 'DrivingLicenceDoB',
@@ -1530,22 +1530,58 @@ describe('evaluate', () => {
 
     expect(result.matches).toEqual([
       {
-        rule: 'pick',
-        vc_path: ['$.verifiableCredential[0]', '$.verifiableCredential[1]'],
+        id: 0,
         name: 'Proof of age and photo',
         type: 'SubmissionRequirement',
-        id: 0,
         from: 'validAgeCheckInputDescriptor',
-        count: 1,
+        areRequiredCredentialsPresent: 'warn',
+        rule: {
+          type: 'pick',
+          count: 1,
+        },
+        input_descriptors: [
+          {
+            id: 'IDDoB',
+            name: 'ID date of birth and photo',
+            type: 'InputDescriptor',
+            vc_path: ['$.verifiableCredential[0]'],
+            areRequiredCredentialsPresent: 'info',
+          },
+          {
+            id: 'DrivingLicenceDoB',
+            name: 'Driving licence date of birth and photo',
+            type: 'InputDescriptor',
+            vc_path: ['$.verifiableCredential[1]'],
+            areRequiredCredentialsPresent: 'info',
+          },
+        ],
       },
       {
-        rule: 'pick',
-        vc_path: ['$.verifiableCredential[2]', '$.verifiableCredential[0]'],
+        id: 1,
         name: 'Proof of other',
         type: 'SubmissionRequirement',
-        id: 1,
         from: 'validOtherCheck',
-        count: 1,
+        areRequiredCredentialsPresent: 'warn',
+        rule: {
+          type: 'pick',
+          count: 1,
+        },
+        input_descriptors: [
+          {
+            id: 'ResidencePermit',
+            name: 'Residence permit date of birth and photo',
+            type: 'InputDescriptor',
+            vc_path: ['$.verifiableCredential[2]'],
+            areRequiredCredentialsPresent: 'info',
+          },
+          {
+            id: 'IDDoB',
+            name: 'ID date of birth and photo',
+            type: 'InputDescriptor',
+            vc_path: ['$.verifiableCredential[0]'],
+            areRequiredCredentialsPresent: 'info',
+          },
+        ],
       },
     ]);
   });

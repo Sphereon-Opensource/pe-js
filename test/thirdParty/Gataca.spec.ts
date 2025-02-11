@@ -2,7 +2,6 @@ import { PresentationDefinitionV1 } from '@sphereon/pex-models';
 import { IPresentation, IProofType, IVerifiableCredential } from '@sphereon/ssi-types';
 
 import { PEX, PEXv1, Status } from '../../lib';
-import { SubmissionRequirementMatchType } from '../../lib/evaluation/core';
 import { GatacaPresentationDefinition } from '../test_data/gataca/gatacaPresentationDefinition';
 import { GatacaSelectedCredentials } from '../test_data/gataca/gatacaSelectedCredentials';
 
@@ -26,20 +25,47 @@ describe('evaluate gataca tests', () => {
     expect(result.areRequiredCredentialsPresent).toEqual(Status.INFO);
     expect(result.matches).toEqual([
       {
-        rule: 'all',
-        from: 'mandatory',
-        vc_path: ['$.verifiableCredential[0]'],
         id: 0,
         name: 'Mandatory data',
-        type: SubmissionRequirementMatchType.SubmissionRequirement,
+        type: 'SubmissionRequirement',
+        from: 'mandatory',
+        areRequiredCredentialsPresent: 'info',
+        rule: {
+          type: 'all',
+          count: 1,
+        },
+        input_descriptors: [
+          {
+            id: 'emailCredential',
+            type: 'InputDescriptor',
+            vc_path: ['$.verifiableCredential[0]'],
+            areRequiredCredentialsPresent: 'info',
+          },
+        ],
       },
       {
-        rule: 'pick',
-        from: 'optional',
-        vc_path: ['$.verifiableCredential[1]'],
         id: 1,
         name: 'Optional data',
-        type: SubmissionRequirementMatchType.SubmissionRequirement,
+        type: 'SubmissionRequirement',
+        from: 'optional',
+        areRequiredCredentialsPresent: 'info',
+        rule: {
+          type: 'pick',
+        },
+        input_descriptors: [
+          {
+            id: 'phoneCredential',
+            type: 'InputDescriptor',
+            vc_path: [],
+            areRequiredCredentialsPresent: 'error',
+          },
+          {
+            id: 'transcriptOfRecordsCredential',
+            type: 'InputDescriptor',
+            vc_path: ['$.verifiableCredential[1]'],
+            areRequiredCredentialsPresent: 'info',
+          },
+        ],
       },
     ]);
     expect(result.verifiableCredential?.length).toEqual(2);
@@ -104,20 +130,51 @@ describe('evaluate gataca tests', () => {
     expect(result.areRequiredCredentialsPresent).toEqual(Status.INFO);
     expect(result.matches).toEqual([
       {
-        rule: 'all',
-        from: 'mandatory',
-        vc_path: ['$.verifiableCredential[0]'],
         id: 0,
         name: 'Mandatory data',
-        type: SubmissionRequirementMatchType.SubmissionRequirement,
+        type: 'SubmissionRequirement',
+        from: 'mandatory',
+        areRequiredCredentialsPresent: 'info',
+        rule: {
+          type: 'all',
+          count: 1,
+        },
+        input_descriptors: [
+          {
+            id: 'emailCredential',
+            name: 'emailCredential',
+            type: 'InputDescriptor',
+            vc_path: ['$.verifiableCredential[0]'],
+            areRequiredCredentialsPresent: 'info',
+          },
+        ],
       },
       {
-        rule: 'pick',
-        from: 'optional',
-        vc_path: ['$.verifiableCredential[1]'],
         id: 1,
         name: 'Optional data',
-        type: SubmissionRequirementMatchType.SubmissionRequirement,
+        type: 'SubmissionRequirement',
+        from: 'optional',
+        areRequiredCredentialsPresent: 'info',
+        rule: {
+          type: 'pick',
+          min: 0,
+        },
+        input_descriptors: [
+          {
+            id: 'phoneCredential',
+            type: 'InputDescriptor',
+            name: 'phoneCredential',
+            vc_path: [],
+            areRequiredCredentialsPresent: 'error',
+          },
+          {
+            id: 'transcriptOfRecordsCredential',
+            name: 'transcriptOfRecordsCredential',
+            type: 'InputDescriptor',
+            vc_path: ['$.verifiableCredential[1]'],
+            areRequiredCredentialsPresent: 'info',
+          },
+        ],
       },
     ]);
     expect(result.verifiableCredential?.length).toEqual(2);
