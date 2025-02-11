@@ -82,6 +82,16 @@ const decodedSdJwtVc = {
   ],
 } satisfies SdJwtDecodedVerifiableCredential;
 
+const decodedSdJwtVcNewPid = {
+  compactSdJwtVc:
+    'eyJ0eXAiOiJ2YytzZC1qd3QiLCJraWQiOiJkaWQ6andrOmV5SmhiR2NpT2lKRlV6STFOaUlzSW5WelpTSTZJbk5wWnlJc0ltdDBlU0k2SWtWRElpd2lZM0oySWpvaVVDMHlOVFlpTENKNElqb2lVemR3V0d0S1RVaGpWR0l5ZG5CU2RIZzVhVzFFZURCNFUzSm5WSGRMWDFGWU1qUldOMGRUV1U5Tk1DSXNJbmtpT2lKM1VYWjJiM054YW1Ga1ltOTVhbWhzWDFCb1JtTnlkRGQzWlVsSU5EaDZaVTl2VFcxcWJpMHljbEJqSW4wIzAiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJkaWQ6andrOmV5SmhiR2NpT2lKRlV6STFOaUlzSW5WelpTSTZJbk5wWnlJc0ltdDBlU0k2SWtWRElpd2lZM0oySWpvaVVDMHlOVFlpTENKNElqb2ljVU50Y0dsNWFtOVlVblkxUm1WalgwRnhPR0Z5VUU5bVRrdEZSSFl5U0ZkSFUyRm1UVGR5TkVGSGJ5SXNJbmtpT2lKc1ZscERZVGhTZHpscFkyRnVhVTlYU2tVeWVHTmFVM1J1WVhKdVZYSklhek5qVmxwUFpubFFiVlE0SW4wIzAiLCJpc3MiOiJkaWQ6andrOmV5SmhiR2NpT2lKRlV6STFOaUlzSW5WelpTSTZJbk5wWnlJc0ltdDBlU0k2SWtWRElpd2lZM0oySWpvaVVDMHlOVFlpTENKNElqb2lVemR3V0d0S1RVaGpWR0l5ZG5CU2RIZzVhVzFFZURCNFUzSm5WSGRMWDFGWU1qUldOMGRUV1U5Tk1DSXNJbmtpT2lKM1VYWjJiM054YW1Ga1ltOTVhbWhzWDFCb1JtTnlkRGQzWlVsSU5EaDZaVTl2VFcxcWJpMHljbEJqSW4wIzAiLCJpYXQiOjE3MzMxNTU0OTMsInZjdCI6Imh0dHBzOi8vZXhhbXBsZS5ibWkuYnVuZC5kZS9jcmVkZW50aWFsL3BpZC8xLjAiLCJfc2QiOlsiOEZDelV2VkhOVDA1WmdDRXptdnNRc0ZLekVVTVZWLW9QMUJDWVkwakxsMCIsIkVuYlRUbFJseUNRdXZ6NkhHZm0yZmtmT3Z2NDMzSE9CcE9ub3ViZzBVeVUiLCJRTEhJZnNvdXR6Xy1hdW96dmpnRUQ2ZUpQV1hVaWZiMkJENDJUQXpFaGlFIiwiZV9yTDlqQXBfRVJrb21OZl9PRGNjdFNBSVREZWNCUWFMRVJyRzVFcFRXQSIsIm00eTR5RVd1cjhRdkdMQ0ROQ3hVY0RwdDc4NDMxZDU0czVzeEUxUkpGRlEiLCJ1cG9Bc3B5Zm11RHhzX3RNXzdmZGFxZVJYMWhGc3FqcVlHSnFfZ3VjYW80Il0sIl9zZF9hbGciOiJTSEEtMjU2In0.PFI-nq8CildqIDp-oKYWaHAnpRK5bRGS4tM6aqnyvNtVZqEkjB3TpxJqtlcPDmynMXsf-ZKxdFkWBhkqMakLHw~WyI4NmYxYWYyOC05MWVkLTRkZDktYWE0Yy0xNTdmODYzNDU4Y2QiLCJnaXZlbl9uYW1lIiwiSm9obiJd~WyIxNDRiYjY5NS1hZGFhLTQyNDMtODY3NS1mOWY3YTA4YzczMjAiLCJmYW1pbHlfbmFtZSIsIkRvZSJd~WyJjNjg2NmU4Mi1kZGJlLTQ0YzMtYjliZS0zOThlOTNkMTA4Y2MiLCJlbWFpbCIsImpvaG5kZW9AZXhhbXBsZS5jb20iXQ~WyI4MTczMjkzNC03ZDMwLTQ4MzAtOWRjMi1hYjgxNjNkMjg4YzciLCJwaG9uZSIsIisxLTIwMi01NTUtMDEwMSJd~WyI5ODQ3OWU1Yi1iOGE0LTRiOTItOTA5Mi1kZjdhNTQ5NGZiMTMiLCJhZGRyZXNzIix7InN0cmVldF9hZGRyZXNzIjoiMTIzIE1haW4gU3QiLCJsb2NhbGl0eSI6IkFueXRvd24iLCJyZWdpb24iOiJBbnlzdGF0ZSIsImNvdW50cnkiOiJVUyJ9XQ~WyI0NDQ1ZGYzNi1iN2E2LTQ3Y2QtODZiYS0wMjBmMzQzZDc2NDciLCJiaXJ0aGRhdGUiLCIxOTQwLTAxLTAxIl0~',
+};
+
+const decodedSdJwtVcOldPid = {
+  compactSdJwtVc:
+    'eyJ0eXAiOiJ2YytzZC1qd3QiLCJraWQiOiJkaWQ6andrOmV5SmhiR2NpT2lKRlV6STFOaUlzSW5WelpTSTZJbk5wWnlJc0ltdDBlU0k2SWtWRElpd2lZM0oySWpvaVVDMHlOVFlpTENKNElqb2lRbE5YUWtFdE5UZHVkeko1TldOMVZsZFdPRjgzUm5aSVozbEpTamQ0TVhCMWRsbzVkMmMyUWpKUlZTSXNJbmtpT2lKNFpUaGZkRXRLY1VKemJ6aHJNRmxDUkhaUFgwOXpkeTFKTVdGcWRVcFFiRU40U2twNGJIWmZRVVJCSW4wIzAiLCJhbGciOiJFUzI1NiJ9.eyJzdWIiOiJkaWQ6andrOmV5SmhiR2NpT2lKRlV6STFOaUlzSW5WelpTSTZJbk5wWnlJc0ltdDBlU0k2SWtWRElpd2lZM0oySWpvaVVDMHlOVFlpTENKNElqb2lOMHBVYVRkWlREUXhhRTlXUm5oNWRtcEJjWE0wUVZnMmNsRnRPVzlFZDNoSmNsUkJhSFp2ZEV0WldTSXNJbmtpT2lJMWRrbDFPVzVmTm1JMk1FSjROMlJJU1VveldpMXNlRzh0VFhjelluVlpSV0ZhVjNWRE5XSjNiemRySW4wIzAiLCJpc3MiOiJkaWQ6andrOmV5SmhiR2NpT2lKRlV6STFOaUlzSW5WelpTSTZJbk5wWnlJc0ltdDBlU0k2SWtWRElpd2lZM0oySWpvaVVDMHlOVFlpTENKNElqb2lRbE5YUWtFdE5UZHVkeko1TldOMVZsZFdPRjgzUm5aSVozbEpTamQ0TVhCMWRsbzVkMmMyUWpKUlZTSXNJbmtpT2lKNFpUaGZkRXRLY1VKemJ6aHJNRmxDUkhaUFgwOXpkeTFKTVdGcWRVcFFiRU40U2twNGJIWmZRVVJCSW4wIzAiLCJpYXQiOjE3MzMxNTgwODksInZjdCI6InVybjpldS5ldXJvcGEuZWMuZXVkaTpwaWQ6MSIsIl9zZCI6WyIwa0lWQzJOVHZ2eTFnek9QSEpOUk9oSjhmaHB3dEIwWEhBOUVXblFKblVZIiwiRU1UeURmR0xLSjkzV3o1dFp1X1JfckFtM0hnZG81VDBqM01HYmhoZDBjbyIsIkhQNVk4d0RsS0Q5VjhqWVFGZHI0MVh3dWlMLXhxaVZKUmY1ODZzV0tJMDQiLCJYWVFFYzlPZk0weFVyWWJodVl3c1VDWHhBLWtuMnozclc1eko1aVdwekMwIiwiZ2Jfem9TeE1aT2VqdElpZ3FCeTNtemhxUXhYT0FmaUMybFd2ZkdPSi1LbyIsInd2cFctMWRyNV91RVZjTG9Ec3RpRUZPYTRrYi11dVcyaFlmZzdETTNzSWciXSwiX3NkX2FsZyI6IlNIQS0yNTYifQ.pVRW95_MZ7hdgTeXMoL5FqvWRgezKI1cJ-QPfDiUNdeQxl6bS_Vh5jvm4vBgHPgG1srxtNuOKiQshGTM8CAwyg~WyJhM2Q2OWEwMi02N2Y3LTQ4MzUtOWRmZC0yMjUxN2IxZjRiMTIiLCJnaXZlbl9uYW1lIiwiSm9obiJd~WyIxYTFhNTg5Ni01M2EyLTQzY2QtODNhYy1jMGNmODhkZjZmNTEiLCJmYW1pbHlfbmFtZSIsIkRvZSJd~WyJmZDViMTFmNC04ZDllLTQzYmYtYTVkMC04ODE5YTJjYjg2MzEiLCJlbWFpbCIsImpvaG5kZW9AZXhhbXBsZS5jb20iXQ~WyJkY2IwNTJjYS02ZDFiLTQ3NDktODNmYi1lNjkxYzIyZTY2ZjAiLCJwaG9uZSIsIisxLTIwMi01NTUtMDEwMSJd~WyI1MDdjM2MyNi0yZjQxLTQwNWEtOTZkMS1lNTI1ZWM2Y2VjNTQiLCJhZGRyZXNzIix7InN0cmVldF9hZGRyZXNzIjoiMTIzIE1haW4gU3QiLCJsb2NhbGl0eSI6IkFueXRvd24iLCJyZWdpb24iOiJBbnlzdGF0ZSIsImNvdW50cnkiOiJVUyJ9XQ~WyIwNzBlZjYyNy05NTAyLTRkMTYtYTNjYi1lNTAwZTViOTk0YWIiLCJiaXJ0aGRhdGUiLCIxOTQwLTAxLTAxIl0~',
+};
+
 // This is the expected output SD-JWT based on the presentation definition defined below
 const decodedSdJwtVcWithDisclosuresRemoved = {
   // 3 disclosures not included
@@ -228,6 +238,96 @@ function getPresentationDefinitionV2(): PresentationDefinitionV2 {
               path: ['$.user.name'],
               filter: {
                 type: 'string',
+              },
+            },
+          ],
+        },
+      },
+    ],
+  };
+}
+
+function getPresentationDefinitionV2_with_enum(): PresentationDefinitionV2 {
+  return {
+    id: '32f54163-7166-48f1-93d8-ff217bdb0653',
+    name: 'Conference Entry Requirements',
+    purpose: 'We can only allow people associated with Washington State business representatives into conference areas',
+    format: {
+      'vc+sd-jwt': {},
+    },
+    input_descriptors: [
+      {
+        id: 'wa_driver_license',
+        name: 'Washington State Business License',
+        purpose: 'We can only allow licensed Washington State business representatives into the WA Business Conference',
+        constraints: {
+          limit_disclosure: 'required',
+          fields: [
+            {
+              path: ['$.vct'],
+              filter: {
+                type: 'string',
+                enum: ['https://example.bmi.bund.de/credential/pid/1.0', 'urn:eu.europa.ec.eudi:pid:1'],
+              },
+            },
+          ],
+        },
+      },
+    ],
+  };
+}
+
+function getPresentationDefinitionV2_const_new_pid(): PresentationDefinitionV2 {
+  return {
+    id: '32f54163-7166-48f1-93d8-ff217bdb0653',
+    name: 'Conference Entry Requirements',
+    purpose: 'We can only allow people associated with Washington State business representatives into conference areas',
+    format: {
+      'vc+sd-jwt': {},
+    },
+    input_descriptors: [
+      {
+        id: 'wa_driver_license',
+        name: 'Washington State Business License',
+        purpose: 'We can only allow licensed Washington State business representatives into the WA Business Conference',
+        constraints: {
+          limit_disclosure: 'required',
+          fields: [
+            {
+              path: ['$.vct'],
+              filter: {
+                type: 'string',
+                const: 'https://example.bmi.bund.de/credential/pid/1.0',
+              },
+            },
+          ],
+        },
+      },
+    ],
+  };
+}
+
+function getPresentationDefinitionV2_const_old_pid(): PresentationDefinitionV2 {
+  return {
+    id: '32f54163-7166-48f1-93d8-ff217bdb0653',
+    name: 'Conference Entry Requirements',
+    purpose: 'We can only allow people associated with Washington State business representatives into conference areas',
+    format: {
+      'vc+sd-jwt': {},
+    },
+    input_descriptors: [
+      {
+        id: 'wa_driver_license',
+        name: 'Washington State Business License',
+        purpose: 'We can only allow licensed Washington State business representatives into the WA Business Conference',
+        constraints: {
+          limit_disclosure: 'required',
+          fields: [
+            {
+              path: ['$.vct'],
+              filter: {
+                type: 'string',
+                const: 'urn:eu.europa.ec.eudi:pid:1',
               },
             },
           ],
@@ -830,5 +930,64 @@ describe('evaluate', () => {
       warnings: [],
       vcIndexes: [0],
     });
+
+  it('selectFrom with vc+sd-jwt format compact - enum new PID format', async () => {
+    const result = pex.selectFrom(getPresentationDefinitionV2_with_enum(), [decodedSdJwtVcNewPid.compactSdJwtVc]);
+    expect(result.errors?.length).toEqual(0);
+    expect(result.matches).toEqual([
+      {
+        name: 'Washington State Business License',
+        rule: 'all',
+        vc_path: ['$.verifiableCredential[0]'],
+        type: SubmissionRequirementMatchType.InputDescriptor,
+        id: 'wa_driver_license',
+      },
+    ]);
+    expect(result.areRequiredCredentialsPresent).toBe('info');
+  });
+
+  it('selectFrom with vc+sd-jwt format compact - enum old PID format', async () => {
+    const result = pex.selectFrom(getPresentationDefinitionV2_with_enum(), [decodedSdJwtVcOldPid.compactSdJwtVc]);
+    expect(result.errors?.length).toEqual(0);
+    expect(result.matches).toEqual([
+      {
+        name: 'Washington State Business License',
+        rule: 'all',
+        vc_path: ['$.verifiableCredential[0]'],
+        type: SubmissionRequirementMatchType.InputDescriptor,
+        id: 'wa_driver_license',
+      },
+    ]);
+    expect(result.areRequiredCredentialsPresent).toBe('info');
+  });
+
+  it('selectFrom with vc+sd-jwt format compact - const new PID format', async () => {
+    const result = pex.selectFrom(getPresentationDefinitionV2_const_new_pid(), [decodedSdJwtVcNewPid.compactSdJwtVc]);
+    expect(result.errors?.length).toEqual(0);
+    expect(result.matches).toEqual([
+      {
+        name: 'Washington State Business License',
+        rule: 'all',
+        vc_path: ['$.verifiableCredential[0]'],
+        type: SubmissionRequirementMatchType.InputDescriptor,
+        id: 'wa_driver_license',
+      },
+    ]);
+    expect(result.areRequiredCredentialsPresent).toBe('info');
+  });
+
+  it('selectFrom with vc+sd-jwt format compact - const old PID format', async () => {
+    const result = pex.selectFrom(getPresentationDefinitionV2_const_old_pid(), [decodedSdJwtVcOldPid.compactSdJwtVc]);
+    expect(result.errors?.length).toEqual(0);
+    expect(result.matches).toEqual([
+      {
+        name: 'Washington State Business License',
+        rule: 'all',
+        vc_path: ['$.verifiableCredential[0]'],
+        type: SubmissionRequirementMatchType.InputDescriptor,
+        id: 'wa_driver_license',
+      },
+    ]);
+    expect(result.areRequiredCredentialsPresent).toBe('info');
   });
 });

@@ -129,6 +129,10 @@ export class UriEvaluationHandler extends AbstractEvaluationHandler {
   private static buildVcContextAndSchemaUris(credential: ICredential | SdJwtDecodedVerifiableCredential | MdocDocument, version: PEVersion) {
     const uris: string[] = [];
 
+    if (CredentialMapper.isMsoMdocDecodedCredential(credential)) {
+      return uris;
+    }
+
     // W3C credential
     if (CredentialMapper.isW3cCredential(credential)) {
       if (Array.isArray(credential['@context'])) {
